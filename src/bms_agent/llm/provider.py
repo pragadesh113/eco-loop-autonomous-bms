@@ -103,9 +103,7 @@ class ProviderConfig(BaseModel):
             fallback_model=fallback or None,
             timeout_seconds=float(os.environ.get("BMS_LLM_TIMEOUT_SECONDS", "8")),
             keep_alive=os.environ.get("BMS_LLM_KEEP_ALIVE", "10m"),
-            audit_path=Path(
-                os.environ.get("BMS_LLM_AUDIT_PATH", "runs/llm-attempts.jsonl")
-            ),
+            audit_path=Path(os.environ.get("BMS_LLM_AUDIT_PATH", "runs/llm-attempts.jsonl")),
         )
 
 
@@ -135,6 +133,7 @@ class AdvisoryProvider(Protocol):
         role: AdvisoryRole,
         output_schema: type[OutputT],
         prompt: str,
+        deadline_bound: bool = False,
     ) -> AdvisoryResult[OutputT]:
         """Produce one typed advisory result with bounded failure behavior."""
         ...
@@ -146,6 +145,8 @@ class StructuredAdvisoryProvider:
     def __init__(self, client: ChatClient, config: ProviderConfig) -> None:
         self._client = client
         self.config = config
+        self._deadline_model: str | None = None
+        self._deadline_uses_fallback = False
 
     def generate(
         self,
@@ -153,6 +154,7 @@ class StructuredAdvisoryProvider:
         role: AdvisoryRole,
         output_schema: type[OutputT],
         prompt: str,
+        deadline_bound: bool = False,
     ) -> AdvisoryResult[OutputT]:
         normalized_prompt = prompt.strip()
         if not normalized_prompt:
@@ -161,9 +163,7 @@ class StructuredAdvisoryProvider:
             raise ValueError("Advisory prompt exceeds the configured compact limit.")
         expected_schema = _ROLE_SCHEMAS[role]
         if output_schema is not expected_schema:
-            raise ValueError(
-                f"Role {role.value!r} requires schema {expected_schema.__name__}."
-            )
+            raise ValueError(f"Role {role.value!r} requires schema {expected_schema.__name__}.")
         started = perf_counter()
         with _INFERENCE_LOCK:
             return self._generate_locked(
@@ -171,6 +171,7 @@ class StructuredAdvisoryProvider:
                 output_schema=output_schema,
                 prompt=normalized_prompt,
                 started=started,
+                deadline_bound=deadline_bound,
             )
 
     def _generate_locked(
@@ -180,81 +181,102 @@ class StructuredAdvisoryProvider:
         output_schema: type[OutputT],
         prompt: str,
         started: float,
+        deadline_bound: bool,
     ) -> AdvisoryResult[OutputT]:
         schema_name = output_schema.__name__
         selection_started = perf_counter()
-        try:
-            available_models = self._client.list_models()
-        except ChatTimeoutError:
-            self._audit_failure(
-                role, schema_name, self.config.primary_model, selection_started,
-                ProviderStatus.TIMEOUT,
-            )
-            return self._failure(
-                output_schema=output_schema,
-                status=ProviderStatus.TIMEOUT,
-                role=role,
-                schema_name=schema_name,
-                model=None,
-                attempts=0,
-                correction_attempted=False,
-                used_fallback=False,
-                started=started,
-                detail="Model discovery timed out.",
-            )
-        except ChatUnavailableError:
-            self._audit_failure(
-                role, schema_name, self.config.primary_model, selection_started,
-                ProviderStatus.UNAVAILABLE,
-            )
-            return self._failure(
-                output_schema=output_schema,
-                status=ProviderStatus.UNAVAILABLE,
-                role=role,
-                schema_name=schema_name,
-                model=None,
-                attempts=0,
-                correction_attempted=False,
-                used_fallback=False,
-                started=started,
-                detail="Inference service is unavailable.",
-            )
-        except ChatModelMissingError:
-            self._audit_failure(
-                role, schema_name, self.config.primary_model, selection_started,
-                ProviderStatus.MODEL_MISSING,
-            )
-            return self._failure(
-                output_schema=output_schema,
-                status=ProviderStatus.MODEL_MISSING,
-                role=role,
-                schema_name=schema_name,
-                model=None,
-                attempts=0,
-                correction_attempted=False,
-                used_fallback=False,
-                started=started,
-                detail="Configured model inventory is unavailable.",
-            )
+        if deadline_bound and self._deadline_model is not None:
+            model = self._deadline_model
+            used_fallback = self._deadline_uses_fallback
+            available_models = frozenset({model})
+        else:
+            try:
+                available_models = self._client.list_models()
+            except ChatTimeoutError:
+                self._audit_failure(
+                    role,
+                    schema_name,
+                    self.config.primary_model,
+                    selection_started,
+                    ProviderStatus.TIMEOUT,
+                )
+                return self._failure(
+                    output_schema=output_schema,
+                    status=ProviderStatus.TIMEOUT,
+                    role=role,
+                    schema_name=schema_name,
+                    model=None,
+                    attempts=0,
+                    correction_attempted=False,
+                    used_fallback=False,
+                    started=started,
+                    detail="Model discovery timed out.",
+                )
+            except ChatUnavailableError:
+                self._audit_failure(
+                    role,
+                    schema_name,
+                    self.config.primary_model,
+                    selection_started,
+                    ProviderStatus.UNAVAILABLE,
+                )
+                return self._failure(
+                    output_schema=output_schema,
+                    status=ProviderStatus.UNAVAILABLE,
+                    role=role,
+                    schema_name=schema_name,
+                    model=None,
+                    attempts=0,
+                    correction_attempted=False,
+                    used_fallback=False,
+                    started=started,
+                    detail="Inference service is unavailable.",
+                )
+            except ChatModelMissingError:
+                self._audit_failure(
+                    role,
+                    schema_name,
+                    self.config.primary_model,
+                    selection_started,
+                    ProviderStatus.MODEL_MISSING,
+                )
+                return self._failure(
+                    output_schema=output_schema,
+                    status=ProviderStatus.MODEL_MISSING,
+                    role=role,
+                    schema_name=schema_name,
+                    model=None,
+                    attempts=0,
+                    correction_attempted=False,
+                    used_fallback=False,
+                    started=started,
+                    detail="Configured model inventory is unavailable.",
+                )
 
-        model, used_fallback = self._select_model(available_models)
-        if model is None:
-            self._audit_failure(
-                role, schema_name, self.config.primary_model, selection_started,
-                ProviderStatus.MODEL_MISSING,
-            )
-            return self._failure(
-                output_schema=output_schema,
-                status=ProviderStatus.MODEL_MISSING,
-                role=role,
-                schema_name=schema_name,
-                model=None,
-                attempts=0,
-                correction_attempted=False,
-                used_fallback=False,
-                started=started,
-                detail="Neither configured model is installed.",
-            )
+            model, used_fallback = self._select_model(available_models)
+            if model is None:
+                self._audit_failure(
+                    role,
+                    schema_name,
+                    self.config.primary_model,
+                    selection_started,
+                    ProviderStatus.MODEL_MISSING,
+                )
+                return self._failure(
+                    output_schema=output_schema,
+                    status=ProviderStatus.MODEL_MISSING,
+                    role=role,
+                    schema_name=schema_name,
+                    model=None,
+                    attempts=0,
+                    correction_attempted=False,
+                    used_fallback=False,
+                    started=started,
+                    detail="Neither configured model is installed.",
+                )
+            if deadline_bound:
+                self._deadline_model = model
+                self._deadline_uses_fallback = used_fallback
 
         system_prompt = _SYSTEM_PROMPT
         if role is AdvisoryRole.SUPERVISOR:
@@ -289,7 +311,11 @@ class StructuredAdvisoryProvider:
                 reply = self._client.chat(request)
             except ChatTimeoutError:
                 self._audit_failure(
-                    role, schema_name, model, attempt_started, ProviderStatus.TIMEOUT,
+                    role,
+                    schema_name,
+                    model,
+                    attempt_started,
+                    ProviderStatus.TIMEOUT,
                     correction_index=correction_index,
                 )
                 return self._failure(
@@ -306,7 +332,11 @@ class StructuredAdvisoryProvider:
                 )
             except ChatUnavailableError:
                 self._audit_failure(
-                    role, schema_name, model, attempt_started, ProviderStatus.UNAVAILABLE,
+                    role,
+                    schema_name,
+                    model,
+                    attempt_started,
+                    ProviderStatus.UNAVAILABLE,
                     correction_index=correction_index,
                 )
                 return self._failure(
@@ -323,12 +353,17 @@ class StructuredAdvisoryProvider:
                 )
             except ChatModelMissingError:
                 self._audit_failure(
-                    role, schema_name, model, attempt_started, ProviderStatus.MODEL_MISSING,
+                    role,
+                    schema_name,
+                    model,
+                    attempt_started,
+                    ProviderStatus.MODEL_MISSING,
                     correction_index=correction_index,
                 )
                 fallback = self.config.fallback_model
                 if (
-                    model == self.config.primary_model
+                    not deadline_bound
+                    and model == self.config.primary_model
                     and fallback is not None
                     and fallback in available_models
                     and attempts < _MAX_ATTEMPTS
@@ -367,7 +402,7 @@ class StructuredAdvisoryProvider:
                         reply=reply,
                     )
                 )
-                if not correction_attempted and attempts < _MAX_ATTEMPTS:
+                if not deadline_bound and not correction_attempted and attempts < _MAX_ATTEMPTS:
                     correction_attempted = True
                     correction_index = 1
                     continue
@@ -378,10 +413,14 @@ class StructuredAdvisoryProvider:
                     schema_name=schema_name,
                     model=model,
                     attempts=attempts,
-                    correction_attempted=True,
+                    correction_attempted=correction_attempted,
                     used_fallback=used_fallback,
                     started=started,
-                    detail="Model output remained malformed after one correction.",
+                    detail=(
+                        "Model output was malformed in deadline-bound mode."
+                        if deadline_bound
+                        else "Model output remained malformed after one correction."
+                    ),
                 )
 
             self._append_attempt(

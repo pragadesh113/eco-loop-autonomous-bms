@@ -221,9 +221,7 @@ def test_representative_schemas_are_extra_forbidden_and_frozen(
     with pytest.raises(ValidationError, match="Extra inputs"):
         schema.model_validate(payload)
 
-    valid_payload = {
-        key: value for key, value in payload.items() if key != "untrusted_override"
-    }
+    valid_payload = {key: value for key, value in payload.items() if key != "untrusted_override"}
     valid = schema.model_validate_json(json.dumps(valid_payload))
     with pytest.raises(ValidationError, match="frozen"):
         valid.__setattr__("untrusted_override", True)
@@ -350,8 +348,7 @@ def test_prior_supervisor_malformed_path_corrects_once_with_compact_wire(
     tmp_path: Path,
 ) -> None:
     prior_truncated = (
-        '{"decision":"accept","setpoint_c":25,"conflict":false,'
-        '"energy":"reduced cooling"'
+        '{"decision":"accept","setpoint_c":25,"conflict":false,"energy":"reduced cooling"'
     )
     client = FakeClient(replies=[_reply(prior_truncated), _reply(SUPERVISOR_JSON)])
     config = _config(tmp_path)
@@ -442,6 +439,166 @@ def test_malformed_output_stops_after_exactly_one_correction(tmp_path: Path) -> 
         "malformed",
         "malformed",
     ]
+
+
+def test_deadline_bound_calls_cache_model_and_make_one_chat_per_role(
+    tmp_path: Path,
+) -> None:
+    client = FakeClient(
+        replies=[
+            _reply(ENERGY_JSON),
+            _reply(COMFORT_JSON),
+            _reply(SUPERVISOR_JSON),
+        ]
+    )
+    provider = StructuredAdvisoryProvider(client, _config(tmp_path))
+
+    results = [
+        provider.generate(
+            role=role,
+            output_schema=schema,
+            prompt="Bounded role evidence.",
+            deadline_bound=True,
+        )
+        for role, schema in (
+            (AdvisoryRole.ENERGY, EnergyProposal),
+            (AdvisoryRole.COMFORT, ComfortAssessment),
+            (AdvisoryRole.SUPERVISOR, SupervisorDecision),
+        )
+    ]
+
+    assert all(result.status is ProviderStatus.SUCCESS for result in results)
+    assert all(result.attempt_count == 1 for result in results)
+    assert all(result.correction_attempted is False for result in results)
+    assert client.list_calls == 1
+    assert len(client.requests) == 3
+    assert [request.model for request in client.requests] == [PRIMARY] * 3
+
+
+def test_deadline_bound_cache_preserves_exact_installed_fallback_selection(
+    tmp_path: Path,
+) -> None:
+    client = FakeClient(
+        models=frozenset({FALLBACK}),
+        replies=[
+            _reply(ENERGY_JSON, model=FALLBACK),
+            _reply(COMFORT_JSON, model=FALLBACK),
+        ],
+    )
+    provider = StructuredAdvisoryProvider(client, _config(tmp_path))
+
+    energy = provider.generate(
+        role=AdvisoryRole.ENERGY,
+        output_schema=EnergyProposal,
+        prompt="Bounded energy evidence.",
+        deadline_bound=True,
+    )
+    comfort = provider.generate(
+        role=AdvisoryRole.COMFORT,
+        output_schema=ComfortAssessment,
+        prompt="Bounded comfort evidence.",
+        deadline_bound=True,
+    )
+
+    assert energy.status is ProviderStatus.SUCCESS
+    assert comfort.status is ProviderStatus.SUCCESS
+    assert energy.model == FALLBACK and comfort.model == FALLBACK
+    assert energy.used_fallback is True and comfort.used_fallback is True
+    assert client.list_calls == 1
+    assert [request.model for request in client.requests] == [FALLBACK, FALLBACK]
+
+
+def test_deadline_bound_malformed_returns_after_one_chat_without_correction(
+    tmp_path: Path,
+) -> None:
+    client = FakeClient(replies=[_reply("{}"), _reply(ENERGY_JSON)])
+    provider = StructuredAdvisoryProvider(client, _config(tmp_path))
+
+    result = provider.generate(
+        role=AdvisoryRole.ENERGY,
+        output_schema=EnergyProposal,
+        prompt="Bounded evidence.",
+        deadline_bound=True,
+    )
+
+    assert result.status is ProviderStatus.MALFORMED
+    assert result.attempt_count == 1
+    assert result.correction_attempted is False
+    assert len(client.requests) == 1
+    assert len(client.requests[0].messages) == 2
+    assert len(client.replies) == 1
+
+
+@pytest.mark.parametrize(
+    ("failure", "status"),
+    [
+        (ChatTimeoutError("deadline timeout"), ProviderStatus.TIMEOUT),
+        (ChatUnavailableError("deadline unavailable"), ProviderStatus.UNAVAILABLE),
+        (
+            ChatModelMissingError("selected model disappeared"),
+            ProviderStatus.MODEL_MISSING,
+        ),
+    ],
+)
+def test_deadline_bound_chat_failure_returns_without_second_chat(
+    tmp_path: Path,
+    failure: Exception,
+    status: ProviderStatus,
+) -> None:
+    client = FakeClient(
+        models=frozenset({PRIMARY, FALLBACK}),
+        replies=[
+            failure,
+            _reply(ENERGY_JSON, model=FALLBACK),
+        ],
+    )
+    provider = StructuredAdvisoryProvider(client, _config(tmp_path))
+
+    result = provider.generate(
+        role=AdvisoryRole.ENERGY,
+        output_schema=EnergyProposal,
+        prompt="Bounded evidence.",
+        deadline_bound=True,
+    )
+
+    assert result.status is status
+    assert result.attempt_count == 1
+    assert result.correction_attempted is False
+    assert result.used_fallback is False
+    assert len(client.requests) == 1
+    assert client.requests[0].model == PRIMARY
+
+
+def test_regular_mode_still_discovers_and_corrects_after_deadline_cache(
+    tmp_path: Path,
+) -> None:
+    client = FakeClient(
+        replies=[
+            _reply(ENERGY_JSON),
+            _reply("{}"),
+            _reply(ENERGY_JSON),
+        ]
+    )
+    provider = StructuredAdvisoryProvider(client, _config(tmp_path))
+    bounded = provider.generate(
+        role=AdvisoryRole.ENERGY,
+        output_schema=EnergyProposal,
+        prompt="Bounded evidence.",
+        deadline_bound=True,
+    )
+
+    regular = provider.generate(
+        role=AdvisoryRole.ENERGY,
+        output_schema=EnergyProposal,
+        prompt="Regular evidence.",
+    )
+
+    assert bounded.status is ProviderStatus.SUCCESS
+    assert regular.status is ProviderStatus.SUCCESS
+    assert regular.attempt_count == 2
+    assert regular.correction_attempted is True
+    assert client.list_calls == 2
+    assert len(client.requests) == 3
 
 
 def test_already_installed_fallback_is_selected_without_installing(tmp_path: Path) -> None:

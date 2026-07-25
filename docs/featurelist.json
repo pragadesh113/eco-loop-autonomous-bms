@@ -205,7 +205,7 @@
       "name": "Energy, Comfort, and Supervisor agents",
       "description": "Implement role prompts and typed outputs for energy proposal, PMV assessment, conflict resolution, explanation, and reflection.",
       "priority": "high",
-      "status": "in_progress",
+      "status": "done",
       "dependencies": [
         "AGT-001"
       ],
@@ -221,7 +221,7 @@
       "name": "Audit log and quantitative evaluation",
       "description": "Persist observation, action, graph-event, error, and summary records; calculate energy, cost, PMV, autonomy, and reliability metrics.",
       "priority": "critical",
-      "status": "todo",
+      "status": "in_progress",
       "dependencies": [
         "SIM-002",
         "AGT-001"

@@ -9,6 +9,7 @@ __pycache__/
 .cache/
 .tools/
 .coverage
+.coverage.*
 coverage.xml
 htmlcov/
 

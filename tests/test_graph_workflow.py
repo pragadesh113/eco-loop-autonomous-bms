@@ -285,6 +285,14 @@ class FakeRuntime:
         return ReflectionRecord(
             decision_id=decision_id,
             reflected_at_utc=UTC_1,
+            predicted_energy_effect=EnergyEffect.NEUTRAL,
+            measured_energy_delta_kwh=state.evaluation.energy_delta_kwh,
+            energy_prediction_matched=True,
+            predicted_comfort_risk=ComfortRisk.LOW,
+            measured_occupied_pmv_compliance_percent=(
+                state.evaluation.occupied_pmv_compliance_percent
+            ),
+            comfort_prediction_matched=True,
             outcome="safe measured outcome",
             recommend_continue=True,
         )

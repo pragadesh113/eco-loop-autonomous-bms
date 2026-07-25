@@ -1,14 +1,14 @@
 # Current Status
 
-Last updated: 2026-07-26 04:34 IST
+Last updated: 2026-07-26 05:18 IST
 
 ## Snapshot
 
 - **Project:** Eco-Loop Building Agents
-- **Phase:** Multi-agent runtime integration
-- **Active feature:** `AGT-002` Energy, Comfort, and Supervisor agents
+- **Phase:** Metrics and evaluation
+- **Active feature:** `MET-001` Audit log and quantitative evaluation
 - **Feature state:** `in_progress`
-- **Last completed feature:** `AGT-001` LangGraph typed state machine
+- **Last completed feature:** `AGT-002` Energy, Comfort, and Supervisor agents
 - **Deadline:** July 26, 2026, 11:59 PM IST
 - **Workspace:** `V:\BMS_simulation`
 
@@ -288,10 +288,66 @@ the full suite passed 272/272 at 91.96% coverage with Ruff, Pyright, lock, JSON,
 and diff checks clean. `AGT-001` and Gate 4 are approved. `SAFE-007` through
 `SAFE-011` and `SAFE-013` are resolved.
 
+A recoverability checkpoint was created locally as commit `cdba391` on
+`codex/hackathon-delivery`, containing the independently approved AGT-001 source,
+contracts, tests, architecture document, evidence, safety record, and control ledgers.
+Nothing was pushed or published.
+
+`AGT-002` fake-first development is complete. Distinct Energy, Comfort, Supervisor,
+and deterministic Reflection contracts/prompts feed an injected `McpGateway` through
+`AgentGraphRuntime`; there are no direct session, EnergyPlus, or actuator imports.
+Provider failures latch typed fallback state; Supervisor evidence is rebound to
+canonical separate Energy/Comfort outputs; gateway results are identity/value checked;
+submit has no retry; and the next observation is consumed once and cached.
+
+`SAFE-012` is implemented with one 30-second monotonic deadline, 21 seconds required
+before every role, and a 3-second submit margin. Fake-clock matrices cover every role,
+revision, boundary, and timely fallback. The Developer gate passed 38 focused and all
+310 tests at 91.48% coverage, plus Ruff, strict Pyright, lock, JSON, hashes, and diff
+checks. Concrete FastMCP transport instantiation is deferred to `RUN-001` so the
+verified server boundary is not refactored.
+
+Independent testing did not approve `AGT-002`. Provider controlled-failure containment
+passed 12/12, reversed-PMV advice was contained 2/2, revision boundaries passed, and a
+gateway exception was invoked exactly once with safe cleanup. Four gaps remain:
+
+- `SAFE-012`: fallback can submit below the 3-second reserve, and a fixed 21-second
+  reserve skips Supervisor at previously observed Energy+Comfort timings.
+- `SAFE-014`: contradictory authorization reason and cached response metadata are not
+  rejected.
+- `SAFE-015`: bounded free-form role rationale is copied into the Supervisor prompt.
+
+Rework keeps the 30-second action window but uses a deadline-bounded provider with
+role-specific reserves (29/20/11 seconds) and a hard 3-second submit check. Model
+rationale is removed from inter-role prompts/evidence, and gateway reason/cache metadata
+becomes part of exact authorization binding.
+
+The rework passed its Developer gate. Deadline-bound provider mode caches one selected
+model and allows one chat maximum while regular LLM-001 behavior remains unchanged.
+Role reserves are 29/20/11 seconds with a hard 3-second submit gate. Both measured
+timing profiles reach all three roles; exact 3.000 submits and 2.999 makes zero gateway
+calls. Advisory/fallback authorization reason and `cached=false` are exact-bound, and
+canonical E/C evidence uses only enums/numerics. The gate passed 105 focused and all
+330 tests at 91.56% coverage, plus Ruff, strict Pyright, lock, JSON, 16 hashes, and diff
+checks. Independent retesting is active.
+
+Independent testing approved `AGT-002`. Both measured timing profiles reached Energy,
+Comfort, Supervisor, and one advisory submission. Exact 3.000-second submission was
+allowed; 2.999 seconds and every late role path made zero gateway calls. Provider
+failures passed 12/12, reversed PMV passed 2/2, and all 20 advisory/fallback gateway
+response mutations failed closed after one counted attempt. Injected role rationale was
+absent from Supervisor prompts, gateway evidence, and graph events. Deadline-bound
+one-chat behavior, ordinary provider compatibility, deterministic reflection, cached
+observation consumption, and import isolation passed. The final gate passed 105 focused
+tests and all 330 tests at 91.56% coverage, plus Ruff, strict Pyright, lock, JSON,
+16 hashes, and diff checks. `SAFE-012`, `SAFE-014`, and `SAFE-015` are resolved.
+No live service, network, EnergyPlus actuator, or MCP server was used. The concrete
+FastMCP transport remains explicitly deferred to `RUN-001`.
+
 ## Safety state
 
-No AGT-001 safety item remains open. `SAFE-012` is the active preventive gate on
-`AGT-002`.
+No AGT-001 or AGT-002 safety item remains open. The next active feature, `MET-001`,
+has no actuator authority and must preserve append-only, run-scoped evidence.
 `SAFE-004`, `SAFE-005`, and `SAFE-006` are resolved after fresh independent testing.
 `SAFE-003` passed independent verification and is resolved. `docs/safety-log.md` also
 contains two mitigated LLM findings:
@@ -318,18 +374,12 @@ compact, sequential, bounded, and optional.
 
 ## Exact next action
 
-Developer implements `AGT-002` fake-first:
-
-1. Add distinct bounded Energy, Comfort, Supervisor, and deterministic Reflection
-   contracts/prompts without direct session or actuator access.
-2. Implement the injectable MCP gateway and concrete `GraphRuntime`, keeping FastMCP
-   server reauthorization as the sole actuation boundary.
-3. Implement `SAFE-012`: one monotonic 30-second decision deadline, 21-second
-   pre-role reserve, remaining-time checks, and timely server-recomputed fallback.
-4. Bind Supervisor evidence to canonical Energy and Comfort outputs; compare predicted
-   and measured energy/comfort in deterministic reflection.
-5. Prove all success, provider failure, deadline, semantic-error, MCP mismatch,
-   reflection, and redaction paths with fake provider/gateway/clock before live use.
+Developer implements `MET-001` from its acceptance criteria: append-only run/decision
+audit records and one shared quantitative evaluator for baseline and controlled runs.
+It must calculate energy, cost, occupied PMV compliance, PPD, action/rejection/fallback,
+latency, autonomy, and reliability metrics without changing verified actuation code.
+Use deterministic fixtures first; hand the feature to an independent Tester only after
+focused tests, full tests, Ruff, Pyright, lock, JSON, hashes, and diff checks pass.
 
 ## Blockers and approvals
 

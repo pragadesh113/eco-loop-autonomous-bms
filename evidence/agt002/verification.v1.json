@@ -1,0 +1,148 @@
+{
+  "schema_version": "1.0",
+  "feature_id": "AGT-002",
+  "generated_at": "2026-07-25T23:40:05Z",
+  "execution_mode": {
+    "fake_only": true,
+    "live_energyplus_used": false,
+    "live_ollama_used": false,
+    "network_used": false,
+    "actuation_attempted": false
+  },
+  "implementation": {
+    "runtime": "AgentGraphRuntime",
+    "runtime_protocol": "GraphRuntime",
+    "simulation_boundary": "injected McpGateway",
+    "action_window_seconds": 30,
+    "role_reserve_seconds": {
+      "energy": 29,
+      "comfort": 20,
+      "supervisor": 11
+    },
+    "submit_margin_seconds": 3,
+    "provider_deadline_bound": true,
+    "deadline_chat_attempt_limit": 1,
+    "deadline_model_selection_cached": true,
+    "max_prompt_characters": 1200,
+    "max_trend_samples": 12,
+    "max_comfort_zones": 5,
+    "max_graph_revisions": 2,
+    "submit_retry_count": 0,
+    "idempotency": "canonical SHA-256-derived key",
+    "deterministic_control_authoritative": true
+  },
+  "safe_012_matrix": {
+    "deadline_starts_at_observation_receipt": "passed",
+    "exact_29_20_11_role_boundaries": "passed",
+    "below_role_reserve_skips_remaining_inference": "passed",
+    "measured_profile_5_72_4_37_5_03_advisory": "passed",
+    "measured_profile_5_54_3_65_5_03_advisory": "passed",
+    "exact_3_000_second_submit_allowed": "passed",
+    "below_2_999_second_submit_rejected_zero_gateway": "passed",
+    "timeout_each_role_timely_fallback": "passed",
+    "revision_path_no_additional_inference": "passed",
+    "fallback_before_stale_observation": "passed",
+    "injected_monotonic_clock_only": "passed"
+  },
+  "failure_matrix": {
+    "timeout_each_role": "passed",
+    "unavailable_each_role": "passed",
+    "model_missing_each_role": "passed",
+    "malformed_each_role": "passed",
+    "typed_placeholders": "passed",
+    "two_revisions_without_more_provider_calls": "passed",
+    "deterministic_hold_fallback": "passed",
+    "no_advisory_actuation_on_failure": "passed"
+  },
+  "safe_014_matrix": {
+    "advisory_reason_must_equal_approved": "passed",
+    "fallback_reason_must_equal_typed_fallback_reason": "passed",
+    "fresh_response_cached_true_rejected": "passed",
+    "fallback_graph_action_requires_typed_fallback": "passed",
+    "each_gateway_field_mutated_independently": "passed",
+    "one_gateway_attempt_on_returned_mismatch": "passed",
+    "one_gateway_attempt_counted_before_raise": "passed",
+    "no_submit_retry": "passed",
+    "fatal_cleanup_after_mismatch": "passed"
+  },
+  "safe_015_matrix": {
+    "energy_rationale_absent_from_supervisor_prompt": "passed",
+    "comfort_rationale_absent_from_supervisor_prompt": "passed",
+    "path_error_freeform_probe_absent_from_gateway_request": "passed",
+    "path_error_freeform_probe_absent_from_graph_events": "passed",
+    "canonical_evidence_uses_only_enum_numeric_fields": "passed",
+    "separate_energy_comfort_provenance_preserved": "passed"
+  },
+  "contract_matrix": {
+    "distinct_role_inputs": "passed",
+    "fixed_units_and_precision": "passed",
+    "prompt_length_bound": "passed",
+    "trend_and_zone_cardinality": "passed",
+    "identifier_timestamp_path_error_redaction": "passed",
+    "pmv_sign_semantics": "passed",
+    "canonical_separate_enum_numeric_supervisor_evidence": "passed",
+    "typed_action_source_evidence_trigger": "passed",
+    "exact_gateway_result_verification": "passed",
+    "single_submit_no_retry": "passed",
+    "next_observation_consumed_once_and_cached": "passed",
+    "predicted_and_measured_reflection_fields": "passed",
+    "runtime_import_isolation": "passed"
+  },
+  "verification": [
+    {
+      "command": "uv run pytest tests/test_llm_provider.py tests/test_agent_prompts.py tests/test_agent_runtime.py -q --no-cov",
+      "result": "passed",
+      "tests_passed": 105,
+      "tests_failed": 0
+    },
+    {
+      "command": "uv run ruff check . --no-cache",
+      "result": "passed"
+    },
+    {
+      "command": "uv run pyright",
+      "result": "passed",
+      "errors": 0,
+      "warnings": 0
+    },
+    {
+      "command": "uv run pytest",
+      "result": "passed",
+      "tests_passed": 330,
+      "tests_failed": 0,
+      "total_coverage_percent": 91.56
+    },
+    {
+      "command": "uv lock --check",
+      "result": "passed",
+      "packages_resolved": 92
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    }
+  ],
+  "sha256": {
+    ".gitignore": "F4A1F3BA0ABF796B472D98396FDA449F21ED17783A7F8FFE41DAABCCB2498493",
+    "src/bms_agent/control/safety.py": "227AF4334D673E348A3601DE9361A96E1B869CFEBA0F263EC2BC692548A0A907",
+    "src/bms_agent/graph/__init__.py": "7810F6B63ADDA7B8757A62DBFC15C3A19F6758F1B1AFC70EF19DB7E0F2BEE8ED",
+    "src/bms_agent/graph/state.py": "B70B9AD6CB2A368BC0EDC4B7A0DC70CB84C643F4EC277FB7B8C21BE4A3D8D8E7",
+    "src/bms_agent/graph/agent_contracts.py": "B151D103A86A43FDACA4DCFD62CE1CCC4C32E5C9975E670B3DA7B5E15A4FF670",
+    "src/bms_agent/graph/agent_runtime.py": "9C80ABCA7828DF5311667138502594B08A0DF6F970F21F4D778624A1FFF8F3BB",
+    "src/bms_agent/graph/prompts.py": "8DA6A2DC59160445D809A879B14F3DCEBFC2FAC1615327A9F971769FA214A86C",
+    "src/bms_agent/llm/provider.py": "73F4D1B42ECC67BC7FEDBAB2B5B0F4D5F6FD859C30FE980FC90080B657D346F0",
+    "tests/test_control_safety.py": "A2A67E40CA05F941AFE5EA44AC62AEB13CCC10DB910D1B0EF06D0D1BF62EB64C",
+    "tests/test_graph_workflow.py": "E9028656E2798227ABE88AD58275E35EEBEEE9746D8F19F0BB173D92B2D78E55",
+    "tests/test_agent_prompts.py": "6713C2859DEB7DAB2EB1FEBA750148528C15F979B6DFCFB0B8920E1F0395127E",
+    "tests/test_agent_runtime.py": "DC58640F5D6936519B3B1AFA50A5D71792CBAB1CC183399C7DDFA92BB44EDD24",
+    "tests/test_llm_provider.py": "C69134C90FDD7CD126458C33D072BAA630EF2397D13457B123A2EB1371C120A4",
+    "docs/agents.md": "3D6E007D9D958B1146D53E8107C4C7CFCEF0B76871567651DBA3AF5596E47957",
+    "docs/langgraph-state-machine.md": "378FD71BA1E481412293E1B36AEEEA830C18CF415902238FA71CCD915709F31E",
+    "uv.lock": "F5A0CD61FB9E674827609F9BB18E668336F75789F9EB26AD44AF1E691E5428B4"
+  },
+  "limitations": [
+    "The concrete FastMCP transport adapter is deferred to RUN-001 so its real server process and client lifecycle are integrated without extracting or weakening the server session boundary.",
+    "Energy delta is a sample-to-sample diagnostic; later measurement features own baseline-versus-controlled savings.",
+    "All AGT-002 verification is intentionally fake-only and does not demonstrate live EnergyPlus or Ollama availability."
+  ]
+}

@@ -623,6 +623,9 @@ def test_invalid_last_safe_values_use_bounded_default(last_safe: float | None) -
 def test_machine_reason_code_catalog_is_stable_and_complete() -> None:
     assert {reason.value for reason in ValidationReasonCode} == {
         "APPROVED",
+        "ADVISORY_UNAVAILABLE",
+        "ADVISORY_DEADLINE_EXHAUSTED",
+        "ADVISORY_ABSTAINED",
         "IDENTITY_MISMATCH",
         "STALE_OBSERVATION",
         "MISSING_ZONE_DATA",

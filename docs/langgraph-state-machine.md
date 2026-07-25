@@ -202,11 +202,39 @@ these compact events to JSONL without changing graph behavior.
 
 ## AGT-002 integration
 
-AGT-002 should implement `GraphRuntime` by composing the already verified LLM provider,
-deterministic control policy, and FastMCP client. The runtime must preserve the identity
-checks above and must not give any LLM role direct MCP, SimulationSession, or actuator
-access. Provider failure should raise `ExpectedGraphError`; deterministic fallback
-remains the only route after two rejected revisions.
+AGT-002 implements `GraphRuntime` as `AgentGraphRuntime`, composing the verified LLM
+provider, deterministic control policy, and an injected typed `McpGateway`. The runtime
+preserves the identity checks above and gives no LLM role direct MCP,
+`SimulationSession`, EnergyPlus, or actuator access. A concrete FastMCP transport
+binding remains a RUN-001 integration task; AGT-002 neither imports nor extracts the
+server's session implementation.
+
+Expected provider statuses (`timeout`, `unavailable`, `model_missing`, and
+`malformed`) latch a stable validation reason, return bounded role placeholders, and
+reach deterministic fallback after the same two graph revision transitions without
+additional provider calls. Unexpected adapter exceptions remain fatal controlled graph
+errors.
+
+The action deadline starts when each observation is received. Deadline-bound provider
+calls use a cached exact model selection and at most one chat attempt. Energy requires
+29 seconds remaining, Comfort 20, Supervisor 11, and submission 3 seconds within the
+exact 30-second window. Deadline exhaustion skips further inference and produces a
+deterministic hold fallback. Exactly 3.000 seconds permits submission; 2.999 seconds
+fails before the gateway is called.
+
+Action requests carry a canonical hash idempotency key and are never retried. All
+returned identity, source, key, and setpoint fields must match exactly. Fresh responses
+must not be cached; advisory authorization reason must be `APPROVED`, while fallback
+reason must equal the typed `FallbackDecision.reason_code`.
+
+Supervisor prompts and canonical control evidence use only allowlisted upstream
+enum/numeric fields. Energy and Comfort model rationale strings are neither forwarded
+to Supervisor nor copied into gateway action evidence or graph events.
+
+The next observation is consumed once and cached for the next decision. Reflection now
+keeps predicted and measured energy and comfort values as separate typed fields with
+explicit comparison booleans. The complete AGT-002 boundary and verification details
+are recorded in `docs/agents.md`.
 
 ## Verification
 

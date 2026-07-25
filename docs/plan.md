@@ -2,7 +2,7 @@
 
 ## Execution status
 
-Last synchronized: 2026-07-26 04:34 IST
+Last synchronized: 2026-07-26 05:18 IST
 
 - [x] `DOC-001` Documentation baseline
 - [x] `FND-001` Python repository scaffold
@@ -20,8 +20,10 @@ Last synchronized: 2026-07-26 04:34 IST
 - [x] `AGT-001` LangGraph typed state machine — approved; `SAFE-007` through
   `SAFE-011` and `SAFE-013` independently resolved
 - [x] Gate 4: approved, retry, fallback, fatal, continuation, and finish routes verified
-- [ ] `AGT-002` Energy, Comfort, and Supervisor agents — in progress; `SAFE-012`
-  deadline control first
+- [x] `AGT-002` Energy, Comfort, and Supervisor agents — independently approved;
+  `SAFE-012`, `SAFE-014`, and `SAFE-015` resolved; concrete FastMCP transport
+  instantiation remains `RUN-001`
+- [ ] `MET-001` Audit log and quantitative evaluation — development active
 
 The implementation remains on the original risk-first sequence. Feasibility evidence
 requires LLM output to be compact and advisory: Qwen3 4B stays as the primary model, but
@@ -83,10 +85,10 @@ Features: `LLM-001`, `AGT-001`, `AGT-002`
 2. Implement the LangGraph nodes and conditional routes specified in `techspec.md`.
 3. Add Energy, Comfort, and Supervisor/Reflection prompts with compact evidence and strict schemas.
 4. Connect graph nodes to MCP tools; do not let agents access the EnergyPlus session directly.
-5. Give the three sequential roles one monotonic decision deadline derived from the
-   30-second session action window. Reserve worst-case provider plus MCP-submit margin
-   before each role; skip remaining inference into deterministic fallback if the budget
-   is insufficient.
+5. Give the three sequential roles one monotonic 30-second deadline. Use a
+   deadline-bounded provider and role-specific reserves of 29 seconds before Energy,
+   20 before Comfort, 11 before Supervisor, and 3 before any submit. Skip remaining
+   inference into deterministic fallback if the relevant budget is unavailable.
 6. Bind Supervisor evidence to separate canonical Energy and Comfort outputs; never
    forward model-invented evidence as trusted provenance.
 7. Evaluate reflection deterministically by comparing predicted energy/comfort direction

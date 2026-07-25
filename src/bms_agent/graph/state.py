@@ -17,7 +17,13 @@ from bms_agent.control import (
     UtcTimestamp,
     ValidationResult,
 )
-from bms_agent.llm import ComfortAssessment, EnergyProposal, SupervisorDecision
+from bms_agent.llm import (
+    ComfortAssessment,
+    ComfortRisk,
+    EnergyEffect,
+    EnergyProposal,
+    SupervisorDecision,
+)
 
 
 class GraphContract(BaseModel):
@@ -83,6 +89,12 @@ class EvaluationRecord(GraphContract):
 class ReflectionRecord(GraphContract):
     decision_id: SafeIdentity
     reflected_at_utc: UtcTimestamp
+    predicted_energy_effect: EnergyEffect
+    measured_energy_delta_kwh: float
+    energy_prediction_matched: bool
+    predicted_comfort_risk: ComfortRisk
+    measured_occupied_pmv_compliance_percent: float = Field(ge=0.0, le=100.0)
+    comfort_prediction_matched: bool
     outcome: str = Field(min_length=1, max_length=160)
     recommend_continue: bool
 

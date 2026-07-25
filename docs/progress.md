@@ -1,17 +1,17 @@
 # Project Progress
 
-Last synchronized: 2026-07-26 04:34 IST
+Last synchronized: 2026-07-26 05:18 IST
 
 `docs/featurelist.json` is the canonical feature registry. This file is its human-readable execution checklist. A checkbox is marked only after the corresponding acceptance criteria pass.
 
 ## Overall status
 
-- Completed: 11 of 17 features
+- Completed: 12 of 17 features
 - In progress or rework: 1
 - Blocked: 0
-- Remaining todo: 5
-- Current stage: `AGT-001` and Gate 4 are approved; `AGT-002` role/runtime integration
-  is active with `SAFE-012` as its first mandatory control.
+- Remaining todo: 4
+- Current stage: `AGT-002` passed independent testing and Senior Lead review;
+  `MET-001` audit and evaluation development is active.
 
 ## Feature checklist
 
@@ -31,6 +31,8 @@ Last synchronized: 2026-07-26 04:34 IST
     `codex/hackathon-delivery`; no remote push performed.
   - Evidence: verified CTL/LLM safety checkpoint committed locally as `4864414`;
     no remote push performed.
+  - Evidence: verified AGT-001 fail-closed workflow checkpoint committed locally as
+    `cdba391`; no remote push performed.
   - Evidence: editable package installed in `.venv` with Python 3.12.1.
   - Evidence: Ruff passed, Pyright reported 0 errors, and Pytest passed 6 tests at 91.67% coverage.
   - Evidence: `.gitignore` excludes secrets, local model weights, EnergyPlus output, weather downloads, and generated runs.
@@ -223,7 +225,7 @@ Last synchronized: 2026-07-26 04:34 IST
   - Independent approval: cardinality 5/5, mixed filtering, direct limit, stream bounds,
     exact patch isolation, 100 graph tests, 272 full tests at 91.96%, Ruff, Pyright,
     lock, JSON, hashes, and diff checks passed. `SAFE-013` is resolved.
-- [ ] `AGT-002` Energy, Comfort, and Supervisor agents — **in_progress**
+- [x] `AGT-002` Energy, Comfort, and Supervisor agents — **done**
   - Preventive safety requirement: `SAFE-012` requires a shared per-decision monotonic
     deadline and timely deterministic fallback because sequential bounded LLM calls can
     exceed EnergyPlus's 30-second maximum action-wait window.
@@ -231,10 +233,44 @@ Last synchronized: 2026-07-26 04:34 IST
     injectable MCP gateway with no action retry, canonical upstream-bound evidence,
     deterministic predicted-versus-measured reflection, and fake provider/gateway/clock
     tests. Implementation remains gated on independent AGT-001 approval.
+  - Developer evidence: strict distinct role/context contracts, <=1200-character
+    redacted prompts, injected `McpGateway`, `AgentGraphRuntime`, canonical separate
+    evidence, deterministic reflection, canonical idempotency, exact gateway response
+    checks, one submit/no retry, and cached next observation are implemented.
+  - SAFE-012 evidence: exact 30/21/3-second deadline budgets, provider failure at each
+    role, insufficient time, revision without more inference, timely fallback, and zero
+    late advisory paths pass with injected fake clock/provider/gateway.
+  - Developer gate: 38 focused tests and all 310 tests at 91.48% coverage passed; Ruff,
+    strict Pyright, lock, JSON, hashes, and diff checks passed. Concrete FastMCP
+    transport instantiation is explicitly deferred to `RUN-001`.
+  - Independent pass evidence: provider controlled failures 12/12, reversed-PMV
+    containment 2/2, supervisor revision boundaries, and one submit invocation on
+    gateway error all passed with no retry.
+  - Independent failure: fallback submitted below the required 3-second margin;
+    fixed 21-second reserves skipped Supervisor at previously measured normal timings;
+    contradictory authorization reason/cached metadata completed; and upstream free-form
+    rationales appeared in the Supervisor prompt. See `SAFE-012`, `SAFE-014`,
+    `SAFE-015`.
+  - Rework evidence: opt-in deadline-bound provider mode caches the selected model and
+    permits one chat; regular LLM-001 correction/fallback behavior remains unchanged.
+    Role reserves 29/20/11 plus a hard 3-second submit gate let both measured timing
+    profiles reach all three roles.
+  - Response/evidence evidence: advisory/fallback reason and fresh cached metadata are
+    exact-bound; canonical E/C evidence is enum/numeric only; every response field and
+    rationale probe is covered.
+  - Rework gate: 105 focused tests and all 330 tests at 91.56% coverage passed; Ruff,
+    strict Pyright, lock, JSON, 16 hashes, and diff checks passed.
+  - Independent approval: measured timing profiles 2/2 reached all three roles and one
+    advisory submit; exact 3.000 seconds submitted and 2.999 made zero gateway calls.
+    Per-role overruns, 12/12 provider failures, reversed PMV, 20/20 gateway response
+    mutations, single-attempt submission, rationale containment, reflection/cache,
+    provider compatibility, import isolation, and all formal gates passed. `SAFE-012`,
+    `SAFE-014`, and `SAFE-015` are resolved for the fake-first boundary. The concrete
+    FastMCP transport remains an explicit `RUN-001` acceptance item.
 
 ### Metrics and integration
 
-- [ ] `MET-001` Audit log and quantitative evaluation — **todo**
+- [ ] `MET-001` Audit log and quantitative evaluation — **in_progress**
 - [ ] `RUN-001` Closed-loop controlled experiment — **todo**
 
 ### Interface, quality, and delivery

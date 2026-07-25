@@ -1,6 +1,6 @@
 # Safety and Decision Log
 
-Last updated: 2026-07-26 04:34 IST
+Last updated: 2026-07-26 05:18 IST
 
 This is the append-only project record for unsafe conditions, safety-relevant findings,
 isolated feature pauses, approval needs, and mitigations. Deterministic safety rules in
@@ -8,10 +8,10 @@ isolated feature pauses, approval needs, and mitigations. Deterministic safety r
 
 ## Current and recently resolved items
 
-Independent rework testing resolved `SAFE-007` through `SAFE-011`. One newly isolated
-event-cardinality root, `SAFE-013`, also passed independent testing. `AGT-001` is
-approved with no open safety item. `SAFE-012` is now the mandatory first control for
-active `AGT-002`.
+Independent rework testing resolved `SAFE-007` through `SAFE-015`, including the
+separate `SAFE-013` event-cardinality root. `AGT-001` and `AGT-002` are approved with
+no open safety item. The concrete FastMCP transport remains isolated to `RUN-001` and
+has not been claimed or exercised by the fake-first `AGT-002` approval.
 
 The second Developer gate passed 94 focused graph tests, 173 control/graph tests, and
 266 full-suite tests at 91.96% coverage, with Ruff, strict Pyright, lock, evidence
@@ -20,6 +20,56 @@ hashes, JSON, and diff checks clean. No live service was used.
 The isolated `SAFE-013` Developer gate passed 100 graph tests, 179 control/graph tests,
 and 272 full-suite tests at 91.96% coverage, with Ruff, strict Pyright, lock, evidence,
 and diff checks clean.
+
+### SAFE-015 — Supervisor prompt forwards untrusted role rationale
+
+- **Observed:** 2026-07-26 04:59 IST during independent `AGT-002` prompt testing.
+- **Affected feature:** `AGT-002`; no live provider or actuation was used.
+- **Evidence:** Bounded but arbitrary Energy/Comfort `reason` text, including path-like
+  and error-like content, appeared verbatim in the Supervisor prompt despite the
+  documented prompt boundary.
+- **Risk:** Untrusted model text can be recursively forwarded to another model role and
+  later evidence/audit fields, contradicting the compact allowlisted prompt claim.
+- **Disposition:** Resolved at 2026-07-26 05:18 IST after independent rework testing.
+- **Required approval:** None.
+- **Controls:** Supervisor prompts and canonical action evidence may use only typed
+  enums, bounded numeric confidence/setpoint, and deterministic labels. Model rationale
+  strings must not be forwarded or persisted as control evidence.
+- **Verification required:** Typed path/error/free-form rationale probes must be absent
+  from Supervisor prompts, gateway requests, events, and audit-safe evidence while
+  distinct Energy/Comfort provenance remains.
+- **Developer evidence:** Supervisor prompts and gateway evidence now use only typed
+  enum/numeric provenance. Injected path/error/free-form rationale probes are absent
+  from prompts, gateway requests, graph events, and control evidence.
+- **Verification:** Fresh independent probes found arbitrary path/error/free-form
+  rationale absent from the Supervisor prompt, gateway request and evidence, and graph
+  events while separate canonical enum/numeric Energy and Comfort provenance remained
+  exact.
+
+### SAFE-014 — Gateway authorization metadata is not fully bound
+
+- **Observed:** 2026-07-26 04:59 IST during independent `AGT-002` gateway testing.
+- **Affected feature:** `AGT-002`; fake gateway only.
+- **Evidence:** Changing only a supposedly accepted response's authorization reason to
+  `RATE_LIMIT_EXCEEDED`, or changing only `cached=false` to `cached=true`, still let the
+  graph complete after one submit.
+- **Risk:** Identity and value match while authorization metadata contradicts a fresh
+  deterministic authorization. A cached replay could also be reported as a new
+  one-write action even though graph actuation is never retried.
+- **Disposition:** Resolved at 2026-07-26 05:18 IST after independent rework testing.
+- **Required approval:** None.
+- **Controls:** Require advisory reason `APPROVED`; require fallback reason to equal the
+  exact `FallbackDecision.reason_code`; reject cached responses for the graph's
+  single-attempt fresh submission. Any mismatch is fatal cleanup with no second submit.
+- **Verification required:** Mutate reason and cached fields independently for advisory
+  and fallback responses; every mismatch must fail closed after exactly one gateway
+  invocation and never report a second actuator write.
+- **Developer evidence:** Advisory reason, exact fallback reason, and `cached=false` are
+  now mandatory. Every returned field mutation fails closed after one attempt.
+- **Verification:** The independent advisory/fallback mutation matrix passed 20/20.
+  Every identity, value, source, key, accepted, authorization-reason, and cache mismatch
+  failed closed after exactly one counted gateway attempt and one cleanup; a raised
+  submission also had no retry.
 
 ### SAFE-013 — Normalized changed-field cardinality can exceed event contract
 
@@ -55,18 +105,36 @@ and diff checks clean.
   combined worst-case wall time exceeds the session window.
 - **Risk:** A safe model or fallback action can arrive after EnergyPlus has already
   advanced, becoming stale and degrading the closed-loop run.
-- **Disposition:** Open preventive design control; no AGT-002 code or live session was
-  started.
+- **Retest evidence:** The first fake control still submitted fallback at 2.999 seconds
+  remaining because apply checked only positive time, not the promised 3-second margin.
+  It also skipped Supervisor for measured Energy+Comfort durations of 5.72+4.37 and
+  5.54+3.65 seconds; only totals at or below 9.000 seconds reached all three roles.
+- **Disposition:** Resolved at 2026-07-26 05:18 IST after independent rework testing.
 - **Required approval:** None. Deadline ownership is mandatory in-scope safety work.
-- **Controls:** Use one monotonic per-decision deadline derived from the MCP/session
-  action-wait window. Before each role, reserve a conservative worst-case single-call
-  budget plus communication margin; if insufficient time remains, skip all remaining
-  model calls and submit deterministic fallback before expiry. Never extend or retry a
-  stale action.
+- **Controls:** Keep one 30-second monotonic deadline and require at least 3 seconds
+  before any gateway submit. Use deadline-bounded structured generation with cached
+  model selection and at most one 8-second chat attempt per later role. Require
+  role-specific remaining budgets: 29 seconds before Energy, 20 before Comfort, and 11
+  before Supervisor. If a budget is unavailable, skip remaining inference and take
+  deterministic fallback. Never extend or retry a stale action.
 - **Verification required:** Fake-clock tests must cover normal three-role completion,
   timeout during each role, insufficient remaining budget, and MCP latency; every
   over-budget path must make no late advisory write and attempt one timely
   server-recomputed fallback.
+- **Developer evidence:** One 30-second monotonic deadline, a 21-second pre-role reserve,
+  and 3-second submit margin are implemented. Exact/below-boundary, per-role elapsed
+  time, revision-without-more-inference, and timely fallback tests passed; full suite
+  passed 310 tests at 91.48% coverage with Ruff and strict Pyright clean.
+- **Rework evidence:** Deadline-bound generation now caches one selected model and uses
+  one chat maximum. Role reserves are 29/20/11 seconds with a hard 3-second submit
+  gate. Both measured three-role timing profiles reach Supervisor/advisory; 3.000
+  seconds submits and 2.999 seconds makes zero gateway calls.
+- **Verification:** Both fresh measured profiles reached all three roles and one valid
+  advisory submit. Exact 3.000 seconds passed; 2.999 and every per-role overrun made
+  zero late gateway calls. Two reserve cases made one timely deterministic fallback.
+  Deadline-bound model caching and one-chat behavior passed for primary, fallback,
+  malformed, and selected-model-failure paths; ordinary provider behavior remained
+  unchanged.
 
 ### SAFE-011 — Unbounded decision identity leaks into dashboard events
 
