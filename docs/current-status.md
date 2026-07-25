@@ -1,14 +1,14 @@
 # Current Status
 
-Last updated: 2026-07-26 03:19 IST
+Last updated: 2026-07-26 04:34 IST
 
 ## Snapshot
 
 - **Project:** Eco-Loop Building Agents
-- **Phase:** LangGraph multi-agent control
-- **Active feature:** `AGT-001` LangGraph typed state machine
+- **Phase:** Multi-agent runtime integration
+- **Active feature:** `AGT-002` Energy, Comfort, and Supervisor agents
 - **Feature state:** `in_progress`
-- **Last completed feature:** `LLM-001` Local structured LLM provider
+- **Last completed feature:** `AGT-001` LangGraph typed state machine
 - **Deadline:** July 26, 2026, 11:59 PM IST
 - **Workspace:** `V:\BMS_simulation`
 
@@ -159,10 +159,140 @@ documentation, model artifacts, compact evidence, tests, and `uv.lock`. Ignored
 runtimes, model weights, weather, caches, and generated runs were not committed. Nothing
 was pushed or published.
 
+The latest local checkpoint is commit `4864414`, containing independently approved
+`CTL-001`/`LLM-001` source, safety rework, tests, documentation, and compact evidence.
+Nothing was pushed or published.
+
+`AGT-001` development is complete. The typed LangGraph workflow has the specified
+14 named nodes and 21 edges, two state-bounded semantic revisions, deterministic
+fallback, fail-closed fatal abort, continuation, and finish routes. Injected fakes cover
+the route matrix without EnergyPlus, Qwen, network, or actuator access. Actuation has no
+exception retry policy. Unique run/thread identity, explicitly allowlisted same-process
+checkpoints, a derived recursion limit, bounded state history, and redacted dashboard
+events are implemented. The Developer gate passed Ruff, strict Pyright, and all 194
+tests at 92.50% total coverage. Independent testing is now active.
+
+Independent testing found `SAFE-007`. A final-summary identity mismatch, an expected
+finalization failure, and an unexpected finalization exception each produced failed
+graph state but followed `finalize_run -> END` with `cleanup_completed=false` and zero
+safe-cleanup calls. `AGT-001` and its dependents are paused while the Tester completes
+the finding set and the Developer adds exactly-once abort cleanup for every fatal
+finalization outcome. No automatic finalization or actuation retry is permitted.
+
+The same audit found `SAFE-008`: a contradictory validator record with
+`approved=true` and reason `RATE_LIMIT_EXCEEDED` caused one fake apply at `25.5°C`.
+No real EnergyPlus write occurred, and the verified MCP boundary would independently
+reject that request later, but the graph must provide its own defense in depth. Rework
+must enforce a self-consistent `APPROVED`, non-emergency, finite, exact, bounded
+authorization with nonempty evidence; every contradiction must apply zero actions and
+clean up exactly once.
+
+The extended matrix found `SAFE-009`: malformed approved proposals with non-finite or
+out-of-bound setpoints and empty evidence can raise an uncaught contract exception
+during `GraphAction` construction. Rework must keep construction inside a protected,
+redacted fail-closed boundary so every malformed case returns controlled failed state,
+applies zero actions, and invokes cleanup exactly once.
+
+Checkpoint identity testing found `SAFE-010`: validation can construct an action from
+a checkpointed proposal whose run, decision, and sequence do not match the current
+observation. Normal supervisor flow derives matching identity, but restored/corrupted
+state must also fail closed. Rework must bind every proposal identity field exactly to
+the current observation and graph run before authorization.
+
+Event testing found `SAFE-011`: a 10,018-character decision ID containing a secret
+marker was accepted from a fake observation and copied into every dashboard event,
+creating 10,450-character event records. Event payloads otherwise remained compact and
+redacted. Direct schema probes also accepted whitespace-only run IDs and unbounded
+event timestamp/run/decision/node/changed-field strings. Rework must allowlist identity
+and bound every event string, rejecting hostile input without copying it into errors or
+events.
+
+Read-only AGT-002 planning found preventive timing risk `SAFE-012`: three sequential
+role calls, each capable of a bounded correction attempt, can outlive EnergyPlus's
+30-second maximum action window. AGT-002 must use one monotonic decision deadline,
+reserve worst-case provider and transport margin before every call, and skip remaining
+roles into timely deterministic fallback rather than submit a stale action.
+
+The Tester gate is formally `TEST_FAILED`. Standard graph routes, no-retry policy,
+recursion cleanup, checkpoint isolation/resume/history, serializer allowlisting,
+normal-event redaction, `langgraph==1.2.9` pin/lock, Ruff, strict Pyright, and all 194
+existing tests at 92.50% coverage passed. Those checks do not override the adversarial
+failures. One bounded Developer rework is active; no live service is involved.
+
+The read-only AGT-002 implementation plan is decision-complete but remains gated. It
+uses distinct role contracts and compact prompts, a fake-first MCP gateway, canonical
+Energy/Comfort evidence binding, deterministic predicted-versus-measured reflection,
+and one monotonic 30-second decision budget with reserved provider/transport margin.
+No AGT-002 file or live service has been changed.
+
+The `SAFE-007` through `SAFE-011` Developer rework is complete. Fatal finalization now
+uses a conditional route to the existing abort node, making the graph 14 nodes/22 edges
+while retaining zero retry policies. Deterministic authorization records are
+self-consistent and independently checked; observation/proposal identity is rebound;
+internal action construction is protected; and run/decision/event strings use bounded
+allowlisted contracts. The gate passed 71 focused graph tests, 150 control/graph tests,
+and all 243 tests at 91.95% coverage, plus Ruff, strict Pyright, lock, evidence, and diff
+checks. No live service was used. All five items remain open pending independent retest.
+
+The independent retest found residual `SAFE-011`: direct `GraphEvent` validation still
+accepted secret/prompt/raw-output markers in `node` and `changed_fields`. Runtime
+normalization filtered those names, but persisted/dashboard event contracts must be
+independently safe. AGT-001 returned to rework while the Tester completes the rest of
+the adversarial matrix.
+
+The retest also found residual `SAFE-009`: a structurally incomplete Supervisor record
+raised raw `AttributeError` because the node accessed it before normalization. Rework
+must validate each runtime-returned Energy, Comfort, and Supervisor record before
+checkpointing or attribute use. Empty unchecked Energy/Comfort records otherwise reach
+completion, while foreign objects can fail serialization without cleanup. Other
+runtime-returned contract types already fail closed. Internal construction must also
+normalize any exception class, not only `ValueError`/`TypeError`.
+
+Coordinated checkpoint testing found residual `SAFE-010`: changing all mutable current
+observation/proposal/action identity fields together still resumed and applied once.
+Single-field mismatches fail closed. Rework must compare graph run ID with LangGraph's
+configured thread ID and compare current decision/sequence with the retained accepted
+observation history, not only with other mutable current fields.
+
+The second Tester report is `TEST_FAILED` with three residual roots only.
+`SAFE-007` finalization cleanup and `SAFE-008` validation consistency are independently
+resolved. Standard routes, checkpoints, recursion, serializer allowlisting, normalized
+event redaction, LangGraph pin/lock, Ruff, strict Pyright, 71 graph tests, 150
+control/graph tests, and all 243 tests at 91.95% coverage passed. These results do not
+override the remaining structural, checkpoint-binding, and direct-event-contract gaps.
+
+The second Developer rework is complete. Energy, Comfort, and Supervisor returns are
+normalized before use/checkpointing; all internal construction exceptions are
+generically contained; authorization is anchored to configured LangGraph thread ID and
+the last retained accepted observation; and direct event fields share the redaction
+keyword validator. The gate passed 94 graph tests, 173 control/graph tests, and all 266
+tests at 91.96% coverage, plus Ruff, strict Pyright, lock, JSON, hashes, and diff checks.
+No live service was used. The final independent cycle is active.
+
+The final independent cycle resolved `SAFE-009`, `SAFE-010`, and `SAFE-011`: fresh
+role/constructor checks passed 19/19, identity-anchor checks 24/24, direct event/stream
+checks 36/36, and prior invariants 27/27. It isolated new `SAFE-013`: 40 individually
+valid changed-field names are not sliced before the 32-item event contract, so event
+normalization raises. The fix is a minimal deterministic sorted-first-32 bound; no
+authorization, graph, retry, or contract-limit change is allowed.
+
+The isolated `SAFE-013` patch now sorts filtered changed-field names and slices them to
+32 before event construction. Its gate passed 100 graph tests, 179 control/graph tests,
+and all 272 tests at 91.96% coverage, plus Ruff, strict Pyright, lock, JSON, hashes, and
+diff checks. Independent 0/1/32/33/40-field verification is active.
+
+Independent `SAFE-013` testing passed: the fresh cardinality matrix was 5/5, mixed
+filtering and direct 32-item contract passed, normal/error streams stayed bounded, and
+the production patch was exactly one deterministic slice. Graph tests passed 100/100;
+the full suite passed 272/272 at 91.96% coverage with Ruff, Pyright, lock, JSON, hashes,
+and diff checks clean. `AGT-001` and Gate 4 are approved. `SAFE-007` through
+`SAFE-011` and `SAFE-013` are resolved.
+
 ## Safety state
 
+No AGT-001 safety item remains open. `SAFE-012` is the active preventive gate on
+`AGT-002`.
 `SAFE-004`, `SAFE-005`, and `SAFE-006` are resolved after fresh independent testing.
-No feature is currently paused.
 `SAFE-003` passed independent verification and is resolved. `docs/safety-log.md` also
 contains two mitigated LLM findings:
 
@@ -188,16 +318,18 @@ compact, sequential, bounded, and optional.
 
 ## Exact next action
 
-Developer implements `AGT-001` as an explicit typed LangGraph process:
+Developer implements `AGT-002` fake-first:
 
-1. Build named nodes and conditional approved, retry, fallback, finish, and fatal routes
-   over immutable typed records.
-2. Keep semantic retries in graph state with exactly two revisions; use exception retry
-   only for narrow idempotent transient reads, never actuator writes.
-3. Add in-process checkpointing with unique run thread IDs, a derived recursion limit,
-   v2 update/task event normalization, and safe abort cleanup. Do not claim restart
-   durability from the in-memory saver.
-4. Test every route with fakes before connecting live role prompts or EnergyPlus.
+1. Add distinct bounded Energy, Comfort, Supervisor, and deterministic Reflection
+   contracts/prompts without direct session or actuator access.
+2. Implement the injectable MCP gateway and concrete `GraphRuntime`, keeping FastMCP
+   server reauthorization as the sole actuation boundary.
+3. Implement `SAFE-012`: one monotonic 30-second decision deadline, 21-second
+   pre-role reserve, remaining-time checks, and timely server-recomputed fallback.
+4. Bind Supervisor evidence to canonical Energy and Comfort outputs; compare predicted
+   and measured energy/comfort in deterministic reflection.
+5. Prove all success, provider failure, deadline, semantic-error, MCP mismatch,
+   reflection, and redaction paths with fake provider/gateway/clock before live use.
 
 ## Blockers and approvals
 

@@ -1,0 +1,104 @@
+{
+  "schema_version": "1.0",
+  "feature_id": "AGT-001",
+  "generated_at": "2026-07-25T23:00:33Z",
+  "environment": {
+    "python": "3.12.1",
+    "platform": "Windows",
+    "langgraph": "1.2.9",
+    "checkpoint": "InMemorySaver",
+    "checkpoint_scope": "same process only"
+  },
+  "implementation": {
+    "named_node_count": 14,
+    "possible_edge_count": 22,
+    "max_revisions": 2,
+    "retry_policy_on_apply": null,
+    "stream_modes": [
+      "updates",
+      "tasks"
+    ],
+    "stream_version": "v2",
+    "durability": "sync",
+    "runtime_dependencies": "injected through GraphRuntime",
+    "live_energyplus_used": false,
+    "live_llm_used": false
+  },
+  "route_matrix": {
+    "approved": "passed",
+    "one_revision_then_approved": "passed",
+    "two_revisions_then_approved": "passed",
+    "retry_exhausted_fallback": "passed",
+    "provider_fatal": "passed",
+    "validation_fatal": "passed",
+    "apply_fatal_single_attempt": "passed",
+    "continue_then_finish": "passed",
+    "recursion_safe_abort": "passed",
+    "checkpoint_isolation_resume_history": "passed",
+    "v2_events_consumable_redacted": "passed",
+    "runtime_identity_mismatch": "passed",
+    "unexpected_exception_redaction": "passed",
+    "finalize_expected_fatal_cleanup_once": "passed",
+    "finalize_unexpected_fatal_cleanup_once": "passed",
+    "finalize_summary_mismatch_cleanup_once": "passed",
+    "validation_contradiction_matrix": "passed",
+    "internal_contract_construction_redacted": "passed",
+    "proposal_identity_normal_and_resumed": "passed",
+    "action_identity_resumed": "passed",
+    "hostile_observation_identity_discarded": "passed",
+    "event_string_bounds_and_marker_exclusion": "passed",
+    "advisory_typed_normalization_matrix": "passed",
+    "generic_constructor_exception_containment": "passed",
+    "thread_id_authorization_binding": "passed",
+    "accepted_history_authorization_binding": "passed",
+    "coordinated_identity_mutation_matrix": "passed",
+    "direct_event_reserved_keyword_rejection": "passed",
+    "event_changed_field_cardinality_bound": "passed"
+  },
+  "verification": [
+    {
+      "command": "uv run pytest tests/test_graph_workflow.py -q --no-cov",
+      "result": "passed",
+      "tests_passed": 100,
+      "tests_failed": 0
+    },
+    {
+      "command": "uv run pytest tests/test_control_safety.py tests/test_graph_workflow.py -q --no-cov",
+      "result": "passed",
+      "tests_passed": 179,
+      "tests_failed": 0
+    },
+    {
+      "command": "uv run ruff check .",
+      "result": "passed"
+    },
+    {
+      "command": "uv run pyright",
+      "result": "passed",
+      "errors": 0,
+      "warnings": 0
+    },
+    {
+      "command": "uv run pytest -q",
+      "result": "passed",
+      "tests_passed": 272,
+      "tests_failed": 0,
+      "total_coverage_percent": 91.96
+    }
+  ],
+  "sha256": {
+    "src/bms_agent/control/safety.py": "8983E1460FDAE4E1DB03AC4A21474A214A9F0CF8F430EF2D1949406BD969A9D3",
+    "src/bms_agent/control/__init__.py": "878CAC0920CF3E0A573FEC42418A8C28F5EFA6B03713177F7047CD46C2AE5D5E",
+    "src/bms_agent/graph/state.py": "ABA416DC4179696D1FEC66ECC697759E67D18E9E926B1E0CA9EBADFA3945E4A0",
+    "src/bms_agent/graph/runtime.py": "D1321D8D68173302116B3D3783503607711E065F388F4C9F016D18B7FBE6C6DD",
+    "src/bms_agent/graph/workflow.py": "B553508EB406309F45CBE8A606342893869D4A2A0712D19A1630EE77C891BC4D",
+    "tests/test_graph_workflow.py": "F5D957347569602513C96631F7325ADEA7ADC210112DD599F4C211D2C87D7964",
+    "uv.lock": "F5A0CD61FB9E674827609F9BB18E668336F75789F9EB26AD44AF1E691E5428B4"
+  },
+  "limitations": [
+    "InMemorySaver does not provide process-restart durability.",
+    "Current-state identity binding trusts the retained accepted observation history and configurable thread ID; coordinated malicious rewriting of that trust root is outside AGT-001.",
+    "Graph events are not persisted until MET-001.",
+    "AGT-002 will supply live advisory, MCP, validation, evaluation, and reflection adapters."
+  ]
+}

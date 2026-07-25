@@ -2,7 +2,7 @@
 
 ## Execution status
 
-Last synchronized: 2026-07-26 03:19 IST
+Last synchronized: 2026-07-26 04:34 IST
 
 - [x] `DOC-001` Documentation baseline
 - [x] `FND-001` Python repository scaffold
@@ -17,7 +17,11 @@ Last synchronized: 2026-07-26 03:19 IST
 - [x] Gate 3: MCP action changes the live cooling setpoint
 - [x] `CTL-001` Deterministic safety validator and fallback
 - [x] `LLM-001` Local structured LLM provider
-- [ ] `AGT-001` LangGraph typed state machine — in progress
+- [x] `AGT-001` LangGraph typed state machine — approved; `SAFE-007` through
+  `SAFE-011` and `SAFE-013` independently resolved
+- [x] Gate 4: approved, retry, fallback, fatal, continuation, and finish routes verified
+- [ ] `AGT-002` Energy, Comfort, and Supervisor agents — in progress; `SAFE-012`
+  deadline control first
 
 The implementation remains on the original risk-first sequence. Feasibility evidence
 requires LLM output to be compact and advisory: Qwen3 4B stays as the primary model, but
@@ -79,8 +83,17 @@ Features: `LLM-001`, `AGT-001`, `AGT-002`
 2. Implement the LangGraph nodes and conditional routes specified in `techspec.md`.
 3. Add Energy, Comfort, and Supervisor/Reflection prompts with compact evidence and strict schemas.
 4. Connect graph nodes to MCP tools; do not let agents access the EnergyPlus session directly.
-5. Stream graph transitions to the event log.
-6. Test approved, revised, retry-exhausted, fallback, completion, and fatal paths using fakes.
+5. Give the three sequential roles one monotonic decision deadline derived from the
+   30-second session action window. Reserve worst-case provider plus MCP-submit margin
+   before each role; skip remaining inference into deterministic fallback if the budget
+   is insufficient.
+6. Bind Supervisor evidence to separate canonical Energy and Comfort outputs; never
+   forward model-invented evidence as trusted provenance.
+7. Evaluate reflection deterministically by comparing predicted energy/comfort direction
+   with measured post-action energy delta, PMV compliance, and emergency safety.
+8. Stream only bounded redacted graph transitions to the event log.
+9. Test approved, revised, retry-exhausted, provider/deadline fallback, completion, and
+   fatal paths using a fake provider, MCP gateway, and monotonic clock before live use.
 
 Exit gate: a simulated observation sequence passes through all agent states and safely applies or rejects actions.
 

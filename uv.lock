@@ -290,7 +290,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "httpx", marker = "extra == 'agents'", specifier = ">=0.28,<1" },
-    { name = "langgraph", marker = "extra == 'agents'", specifier = ">=1.0,<2" },
+    { name = "langgraph", marker = "extra == 'agents'", specifier = "==1.2.9" },
     { name = "mcp", marker = "extra == 'agents'", specifier = ">=1.12,<2" },
     { name = "ollama", marker = "extra == 'agents'", specifier = ">=0.6,<1" },
     { name = "pandas", marker = "extra == 'dashboard'", specifier = ">=2.2,<3" },

@@ -3,19 +3,94 @@
 from __future__ import annotations
 
 import math
+import re
 from dataclasses import dataclass
 from enum import StrEnum
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import (
+    AfterValidator,
+    BaseModel,
+    ConfigDict,
+    Field,
+    StringConstraints,
+    model_validator,
+)
 
 from bms_agent.simulation.baseline import ZONES
+
+IDENTITY_PATTERN = r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+EVENT_FIELD_PATTERN = r"^[a-z][a-z0-9_]{0,63}$"
+UTC_TIMESTAMP_PATTERN = (
+    r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?Z$"
+)
+_IDENTITY_RE = re.compile(IDENTITY_PATTERN)
+_FORBIDDEN_IDENTITY_MARKERS = (
+    "password",
+    "prompt",
+    "raw-output",
+    "raw_output",
+    "secret",
+    "token",
+)
+
+
+def validate_identity(value: str) -> str:
+    """Reject identity values that can carry unbounded or secret-like content."""
+
+    lowered = value.lower()
+    if _IDENTITY_RE.fullmatch(value) is None or any(
+        marker in lowered for marker in _FORBIDDEN_IDENTITY_MARKERS
+    ):
+        raise ValueError("identity must use the bounded allowlisted shape")
+    return value
+
+
+def validate_event_field(value: str) -> str:
+    """Reject reserved redaction keywords from event metadata surfaces."""
+
+    lowered = value.lower()
+    if any(marker in lowered for marker in _FORBIDDEN_IDENTITY_MARKERS):
+        raise ValueError("event field contains a reserved redaction keyword")
+    return value
+
+
+SafeIdentity = Annotated[
+    str,
+    StringConstraints(min_length=1, max_length=128, pattern=IDENTITY_PATTERN),
+    AfterValidator(validate_identity),
+]
+NonBlankEvidence = Annotated[
+    str,
+    StringConstraints(strip_whitespace=True, min_length=1, max_length=512),
+]
+BoundedTimestamp = Annotated[
+    str,
+    StringConstraints(strip_whitespace=True, min_length=1, max_length=64),
+]
+UtcTimestamp = Annotated[
+    str,
+    StringConstraints(
+        min_length=20,
+        max_length=27,
+        pattern=UTC_TIMESTAMP_PATTERN,
+    ),
+]
+EventFieldName = Annotated[
+    str,
+    StringConstraints(min_length=1, max_length=64, pattern=EVENT_FIELD_PATTERN),
+    AfterValidator(validate_event_field),
+]
 
 
 class Contract(BaseModel):
     """Immutable, extra-forbidden control contract."""
 
-    model_config = ConfigDict(extra="forbid", frozen=True, strict=True)
+    model_config = ConfigDict(
+        extra="forbid",
+        frozen=True,
+        strict=True,
+    )
 
 
 class ZoneSnapshot(Contract):
@@ -34,20 +109,20 @@ class ObservationSnapshot(Contract):
 
 
 class ObservationEnvelope(Contract):
-    run_id: str
-    decision_id: str
+    run_id: SafeIdentity
+    decision_id: SafeIdentity
     sequence: int
-    observed_at_utc: str
+    observed_at_utc: BoundedTimestamp
     snapshot: ObservationSnapshot
 
 
 class ControlProposal(Contract):
-    run_id: str
-    decision_id: str
+    run_id: SafeIdentity
+    decision_id: SafeIdentity
     observation_sequence: int
     proposed_setpoint_c: float
-    energy_evidence: str
-    comfort_evidence: str
+    energy_evidence: NonBlankEvidence
+    comfort_evidence: NonBlankEvidence
 
 
 class ValidationReasonCode(StrEnum):
@@ -74,9 +149,25 @@ class ValidationReasonCode(StrEnum):
 class ValidationResult(Contract):
     approved: bool
     reason_code: ValidationReasonCode
-    validated_setpoint_c: float | None
+    validated_setpoint_c: float | None = Field(default=None, ge=22.0, le=28.0)
     emergency_observed: bool
-    evidence: tuple[str, ...]
+    evidence: tuple[NonBlankEvidence, ...] = Field(min_length=1, max_length=16)
+
+    @model_validator(mode="after")
+    def require_consistent_authorization(self) -> ValidationResult:
+        if self.approved:
+            if (
+                self.reason_code is not ValidationReasonCode.APPROVED
+                or self.emergency_observed
+                or self.validated_setpoint_c is None
+            ):
+                raise ValueError("approved validation must be a non-emergency approval")
+        elif (
+            self.reason_code is ValidationReasonCode.APPROVED
+            or self.validated_setpoint_c is not None
+        ):
+            raise ValueError("rejected validation cannot carry an approval or setpoint")
+        return self
 
 
 class FallbackReasonCode(StrEnum):
@@ -94,7 +185,7 @@ class FallbackDecision(Contract):
     reason_code: FallbackReasonCode
     emergency_observed: bool
     used_default_reference: bool
-    evidence: tuple[str, ...]
+    evidence: tuple[NonBlankEvidence, ...] = Field(min_length=1, max_length=16)
 
 
 @dataclass(frozen=True, slots=True)
