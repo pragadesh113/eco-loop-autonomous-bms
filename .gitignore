@@ -1,0 +1,59 @@
+# Python environments and caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.cache/
+.tools/
+.coverage
+coverage.xml
+htmlcov/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Editors and operating system files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+
+# Local model artifacts
+*.gguf
+*.safetensors
+*.bin
+
+# EnergyPlus generated outputs
+eplusout.*
+eplusmtr.*
+eplustbl.*
+sqlite.err
+*.eso
+*.mtr
+*.rdd
+*.mdd
+*.edd
+
+# Generated experiments and downloaded weather
+runs/*
+weather/*.epw
+weather/*.stat
+weather/*.ddy
+
+# Presentation/video build artifacts
+output/
+outputs/
+*.mp4

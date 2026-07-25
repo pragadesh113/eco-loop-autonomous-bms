@@ -1,0 +1,3 @@
+source,component_unique_name,component_type,control_type,units
+EnergyPlus 26.1.0 eplusout.edd,CLG-SETP-SCH,Schedule:Compact,Schedule Value,[ ]
+

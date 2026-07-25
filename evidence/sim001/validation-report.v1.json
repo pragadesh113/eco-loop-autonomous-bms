@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "1.0",
+  "feature": "SIM-001",
+  "validatedAt": "2026-07-26T01:18:00+05:30",
+  "energyPlus": {
+    "version": "26.1.0",
+    "build": "6f2e40d102"
+  },
+  "weather": {
+    "file": "weather/IND_DL_New.Delhi-Safdarjung.AP.421820_TMYx.2011-2025.epw",
+    "sha256": "8201E41AA7517016558C369053A06B000ED038647DCDD0681512C3775DDE486B"
+  },
+  "models": {
+    "official": {
+      "file": "models/5ZoneAirCooled.official.idf",
+      "bytes": 169736,
+      "sha256": "0187CF7F2CA9C27C43D435A68A8C66A557A43678846813A7E21463A0B0C716CD",
+      "byteIdenticalToEnergyPlusExample": true
+    },
+    "baseline": {
+      "file": "models/5ZoneAirCooled.baseline.v1.idf",
+      "sha256": "88CD53D18610BD7B36C7BC785B20574F2B8FC7655AC22D3FA49225B2664A34F1"
+    },
+    "controlled": {
+      "file": "models/5ZoneAirCooled.controlled.v1.idf",
+      "sha256": "E0C692603F1558EFC28878F274043264E94FB83AF59B9A3A5767634F14F3A13B"
+    },
+    "physicsDifference": "None; only the leading mode comment differs."
+  },
+  "runs": {
+    "baseline": {
+      "outputDirectory": ".cache/validation/sim001/baseline-v1-delhi-sizing",
+      "exitCode": 0,
+      "warnings": 2,
+      "severeErrors": 0
+    },
+    "controlled": {
+      "outputDirectory": ".cache/validation/sim001/controlled-v1-delhi-sizing",
+      "exitCode": 0,
+      "warnings": 2,
+      "severeErrors": 0
+    }
+  },
+  "dictionaryEvidence": {
+    "eddSha256": "E4C066FE580C2688FFCA0C4EBE06B5A5919007D841797BB6C837E16891FF64BA",
+    "rddSha256": "0A0CA5CD13F01B21A2BEC71495090D10EAE11EC6CE14A296C1A0AA0B9B790710",
+    "mddSha256": "B01DAF54DFC46E59A30A0ABB3379AFEF71AC6C0B477CFCC760EA869D4810EBCA",
+    "actuator": {
+      "componentUniqueName": "CLG-SETP-SCH",
+      "componentType": "Schedule:Compact",
+      "controlType": "Schedule Value",
+      "exactEddRecord": "EnergyManagementSystem:Actuator Available,CLG-SETP-SCH,Schedule:Compact,Schedule Value,[ ]"
+    },
+    "availableOutputs": [
+      "Site Outdoor Air Drybulb Temperature",
+      "People Occupant Count",
+      "Zone Mean Air Temperature",
+      "Zone Thermal Comfort Fanger Model PMV",
+      "Zone Thermal Comfort Fanger Model PPD",
+      "Zone Thermostat Cooling Setpoint Temperature",
+      "Schedule Value",
+      "Electricity:HVAC"
+    ]
+  },
+  "knownWarnings": [
+    "New Delhi heating sizing produces zero autosized flow for the outdoor-air heating coil.",
+    "The related outdoor-air heating-coil controller therefore reports zero maximum actuated flow."
+  ],
+  "warningImpact": "The two warnings are non-severe and confined to the unused summer-experiment heating path. They do not prevent the May cooling experiment, Fanger reporting, HVAC meter reporting, or cooling-schedule actuation."
+}

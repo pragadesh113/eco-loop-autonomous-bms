@@ -1,0 +1,53 @@
+{
+  "energyPlusVersion": "26.1.0",
+  "experiment": {
+    "comfort": {
+      "airVelocityMPerS": 0.15,
+      "airVelocitySchedule": "EcoLoop-Air-Velocity",
+      "clothingClo": 0.5,
+      "clothingSchedule": "EcoLoop-Summer-Clothing",
+      "model": "Fanger",
+      "workEfficiencySchedule": "EcoLoop-Work-Efficiency"
+    },
+    "coolingScheduleActuator": {
+      "componentType": "Schedule:Compact",
+      "controlType": "Schedule Value",
+      "key": "Clg-SetP-Sch"
+    },
+    "location": "New Delhi Safdarjung Airport, India",
+    "runPeriod": {
+      "begin_day": 23,
+      "begin_month": 5,
+      "end_day": 29,
+      "end_month": 5
+    },
+    "sizingDesignDays": [
+      "New.Delhi-Safdarjung.AP Ann Htg 99% Condns DB",
+      "New.Delhi-Safdarjung.AP Ann Clg 1% Condns DB=>MWB"
+    ],
+    "startDay": "Monday",
+    "timestepsPerHour": 4,
+    "weatherStem": "IND_DL_New.Delhi-Safdarjung.AP.421820_TMYx.2011-2025"
+  },
+  "feature": "SIM-001",
+  "generator": "bms_agent.simulation.model_prep",
+  "models": {
+    "baseline": {
+      "repositoryPath": "models/5ZoneAirCooled.baseline.v1.idf",
+      "sha256": "88cd53d18610bd7b36c7bc785b20574f2b8fc7655ac22d3fa49225b2664a34f1"
+    },
+    "controlled": {
+      "repositoryPath": "models/5ZoneAirCooled.controlled.v1.idf",
+      "sha256": "e0c692603f1558efc28878f274043264e94fb83af59b9a3a5767634f14f3a13b"
+    },
+    "physicsDifference": "None; only the leading mode comment differs."
+  },
+  "schemaVersion": "1.0",
+  "source": {
+    "byteIdenticalToUpstream": true,
+    "bytes": 169736,
+    "repositoryPath": "models/5ZoneAirCooled.official.idf",
+    "sha256": "0187cf7f2ca9c27c43d435a68a8c66a557a43678846813a7e21463a0b0c716cd",
+    "upstreamRelativePath": "ExampleFiles/5ZoneAirCooled.idf"
+  }
+}

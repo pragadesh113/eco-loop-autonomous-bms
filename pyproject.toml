@@ -1,0 +1,88 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ecoloop-building-agents"
+version = "0.1.0"
+description = "Autonomous PMV-aware EnergyPlus building control through LangGraph and MCP."
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+license = { text = "MIT" }
+authors = [{ name = "Eco-Loop Building Agents Team" }]
+dependencies = [
+  "pydantic>=2.10,<3",
+  "typing-extensions>=4.12,<5",
+]
+
+[project.optional-dependencies]
+agents = [
+  "httpx>=0.28,<1",
+  "langgraph>=1.0,<2",
+  "mcp>=1.12,<2",
+  "ollama>=0.6,<1",
+]
+dashboard = [
+  "pandas>=2.2,<3",
+  "plotly>=6,<7",
+  "streamlit>=1.45,<2",
+]
+dev = [
+  "pyright>=1.1.400,<2",
+  "pytest>=8.3,<9",
+  "pytest-cov>=6,<7",
+  "ruff>=0.11,<1",
+]
+
+[project.scripts]
+bms-agent = "bms_agent.cli:entrypoint"
+bms-mcp = "bms_agent.mcp_server.server:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/bms_agent"]
+
+[tool.pytest.ini_options]
+addopts = [
+  "--strict-config",
+  "--strict-markers",
+  "--cov=bms_agent",
+  "--cov-report=term-missing",
+  "--cov-fail-under=90",
+]
+testpaths = ["tests"]
+
+[tool.coverage.run]
+branch = true
+source = ["bms_agent"]
+
+[tool.coverage.report]
+exclude_also = [
+  "if __name__ == .__main__.:",
+]
+show_missing = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = [
+  "B",
+  "E",
+  "F",
+  "I",
+  "SIM",
+  "UP",
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["bms_agent"]
+
+[tool.pyright]
+include = ["src", "tests"]
+exclude = [".venv", "runs"]
+pythonVersion = "3.11"
+typeCheckingMode = "strict"
+reportMissingTypeStubs = false
+venvPath = "."
+venv = ".venv"

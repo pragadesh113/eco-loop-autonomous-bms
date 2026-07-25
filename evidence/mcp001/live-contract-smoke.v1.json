@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "1.0",
+  "featureId": "MCP-001",
+  "runId": "mcp-live-50cddc0a",
+  "startedAtUtc": "2026-07-25T20:41:11.589548+00:00",
+  "completed": true,
+  "transportBoundary": "FastMCP.call_tool",
+  "simulation": {
+    "status": "completed",
+    "exitCode": 0,
+    "weatherTimesteps": 96,
+    "hourlyObservations": 24,
+    "failure": null
+  },
+  "action": {
+    "decisionId": "mcp-live-50cddc0a-decision-0010",
+    "observationSequence": 10,
+    "idempotencyKey": "live-action-1",
+    "requestedSetpointC": 25.0,
+    "firstCallAccepted": true,
+    "exactReplayCached": true,
+    "conflictingReplayErrorCode": "IDEMPOTENCY_CONFLICT",
+    "actionsApplied": 1,
+    "actuatorValueAfterWriteC": 25.0,
+    "observedScheduleValueC": 25.0,
+    "observedFiveZoneSetpointsC": [
+      25.0,
+      25.0,
+      25.0,
+      25.0,
+      25.0
+    ]
+  },
+  "units": {
+    "temperature": "degC"
+  },
+  "artifacts": {
+    "runDirectory": "runs/mcp-live-50cddc0a",
+    "toolAudit": "runs/mcp-tool-audit.jsonl",
+    "actionAudit": "runs/mcp-live-50cddc0a/actions.jsonl",
+    "sessionResult": "runs/mcp-live-50cddc0a/session-result.json"
+  },
+  "sha256": {
+    "controlledModel": "E0C692603F1558EFC28878F274043264E94FB83AF59B9A3A5767634F14F3A13B",
+    "stagedInput": "E0C692603F1558EFC28878F274043264E94FB83AF59B9A3A5767634F14F3A13B",
+    "actionAudit": "03BCC6B2ACE1715DEE2A5CE4D5CE6BFA25CA4C8443817B2DF6397CFDC9917614",
+    "sessionResult": "98F433FA46E0A5CEBDF4705626A0FDC9B0F999DADBE51900189C68669953C5C6"
+  }
+}

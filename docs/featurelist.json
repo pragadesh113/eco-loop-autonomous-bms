@@ -1,0 +1,302 @@
+{
+  "schemaVersion": "1.0",
+  "project": {
+    "name": "Eco-Loop Building Agents",
+    "repositoryPath": "V:\\BMS_simulation",
+    "deadline": "2026-07-26T23:59:00+05:30",
+    "primaryGoal": "Reduce EnergyPlus HVAC electricity while maintaining occupied-zone Fanger PMV comfort through an autonomous LangGraph and MCP control loop."
+  },
+  "statusValues": [
+    "todo",
+    "ready",
+    "in_progress",
+    "dev_complete",
+    "testing",
+    "test_failed",
+    "lead_triage",
+    "rework",
+    "lead_review",
+    "waiting_approval",
+    "blocked",
+    "done"
+  ],
+  "features": [
+    {
+      "id": "DOC-001",
+      "module": "documentation",
+      "name": "Engineering documentation baseline",
+      "description": "Create the technical specification, modular feature list, implementation plan, progress tracker, current status, and agent guidance.",
+      "priority": "critical",
+      "status": "done",
+      "dependencies": [],
+      "acceptanceCriteria": [
+        "All requested documentation files exist.",
+        "Feature IDs and statuses agree across featurelist.json and progress.md.",
+        "A new agent can identify the current stage and next action from current-status.md."
+      ]
+    },
+    {
+      "id": "OPS-001",
+      "module": "operations",
+      "name": "Autonomous feature-delivery orchestration",
+      "description": "Define and activate the controlled Developer, Tester, and Senior Technical Lead loop with automatic documentation synchronization and safety-based approval gates.",
+      "priority": "critical",
+      "status": "done",
+      "dependencies": [
+        "DOC-001"
+      ],
+      "acceptanceCriteria": [
+        "The workflow documents feature states, role ownership, verification, rework, retries, and completion.",
+        "Safe autonomous actions and mandatory user-approval actions are explicitly separated.",
+        "A bounded Codex heartbeat resumes work from current-status.md and stops at the submission deadline.",
+        "All agent guidance requires automatic documentation synchronization."
+      ]
+    },
+    {
+      "id": "FND-001",
+      "module": "foundation",
+      "name": "Python repository scaffold",
+      "description": "Initialize Git, pyproject.toml, source/test layout, dependency groups, environment template, Ruff, Pyright, Pytest, and ignore rules.",
+      "priority": "critical",
+      "status": "done",
+      "dependencies": [
+        "DOC-001"
+      ],
+      "acceptanceCriteria": [
+        "The project installs into an isolated virtual environment.",
+        "Lint, type-check, and test commands execute successfully.",
+        "Generated runs, model weights, and secrets are excluded from Git."
+      ]
+    },
+    {
+      "id": "ENV-001",
+      "module": "environment",
+      "name": "EnergyPlus and Ollama feasibility",
+      "description": "Install or locate EnergyPlus, Ollama, Qwen3 4B, example models, and New Delhi weather; record exact versions and validate basic execution.",
+      "priority": "critical",
+      "status": "done",
+      "dependencies": [
+        "FND-001"
+      ],
+      "acceptanceCriteria": [
+        "EnergyPlus runs an official example successfully.",
+        "Ollama returns a valid structured response from Qwen3 4B or the documented smaller fallback.",
+        "Version and path diagnostics are available through the project CLI."
+      ]
+    },
+    {
+      "id": "SIM-001",
+      "module": "simulation",
+      "name": "Model and weather preparation",
+      "description": "Prepare the small-office New Delhi experiment, People/Fanger settings, output variables, meter, writable cooling schedule, and fixed run period.",
+      "priority": "critical",
+      "status": "done",
+      "dependencies": [
+        "ENV-001"
+      ],
+      "acceptanceCriteria": [
+        "Baseline and controlled IDFs are versioned separately.",
+        "The model reports zone temperature, PMV, PPD, occupancy, outdoor temperature, and HVAC electricity.",
+        "The actuator dictionary proves the selected schedule actuator is writable."
+      ]
+    },
+    {
+      "id": "SIM-002",
+      "module": "simulation",
+      "name": "Baseline simulation pipeline",
+      "description": "Run the fixed-schedule baseline and normalize EnergyPlus outputs into observations.csv and summary.json.",
+      "priority": "critical",
+      "status": "done",
+      "dependencies": [
+        "SIM-001"
+      ],
+      "acceptanceCriteria": [
+        "A seven-day baseline completes.",
+        "HVAC kWh and occupied PMV metrics are reproducible.",
+        "Run metadata records model, weather, dates, timestep, and software version."
+      ]
+    },
+    {
+      "id": "SIM-003",
+      "module": "simulation",
+      "name": "Active control session",
+      "description": "Implement EnergyPlus callbacks, sensor/meter handles, the decision-boundary bridge, actuator writes, and safe session shutdown.",
+      "priority": "critical",
+      "status": "done",
+      "dependencies": [
+        "SIM-001"
+      ],
+      "acceptanceCriteria": [
+        "A one-day smoke run publishes observations at control boundaries.",
+        "A test action visibly changes the active cooling setpoint.",
+        "Missing handles and fatal EnergyPlus errors stop safely with diagnostics."
+      ]
+    },
+    {
+      "id": "MCP-001",
+      "module": "mcp",
+      "name": "FastMCP EnergyPlus server",
+      "description": "Expose typed simulation lifecycle, observation, trend, constraints, action, status, error, reset, and summary tools.",
+      "priority": "critical",
+      "status": "done",
+      "dependencies": [
+        "SIM-003"
+      ],
+      "acceptanceCriteria": [
+        "All tools return typed JSON-compatible content with units.",
+        "Stale and duplicate actions are rejected deterministically.",
+        "Tool errors are normalized and logged."
+      ]
+    },
+    {
+      "id": "LLM-001",
+      "module": "llm",
+      "name": "Local structured LLM provider",
+      "description": "Implement the Ollama provider, Qwen3 configuration, Pydantic structured output, timeouts, latency logging, and smaller-model fallback.",
+      "priority": "high",
+      "status": "todo",
+      "dependencies": [
+        "ENV-001",
+        "FND-001"
+      ],
+      "acceptanceCriteria": [
+        "Energy, comfort, and supervisor schemas parse reliably.",
+        "Malformed responses trigger bounded correction.",
+        "Model unavailability produces a controlled fallback signal."
+      ]
+    },
+    {
+      "id": "CTL-001",
+      "module": "control",
+      "name": "Safety validator and fallback policy",
+      "description": "Enforce PMV bands, setpoint bounds, rate limits, freshness, retry limits, and deterministic occupied/unoccupied fallback actions.",
+      "priority": "critical",
+      "status": "in_progress",
+      "dependencies": [
+        "FND-001"
+      ],
+      "acceptanceCriteria": [
+        "Unsafe or stale actions cannot reach the actuator.",
+        "All boundary and fallback paths have unit tests.",
+        "Every rejection returns a machine-readable reason."
+      ]
+    },
+    {
+      "id": "AGT-001",
+      "module": "agents",
+      "name": "LangGraph typed state machine",
+      "description": "Implement named workflow states, conditional routing, bounded retries, fallback, completion, failure, checkpointing, and streamed events.",
+      "priority": "critical",
+      "status": "todo",
+      "dependencies": [
+        "LLM-001",
+        "CTL-001",
+        "MCP-001"
+      ],
+      "acceptanceCriteria": [
+        "The complete perception-to-reflection process is represented as graph nodes and edges.",
+        "Approved, rejected, fallback, finish, and fatal paths are testable without EnergyPlus.",
+        "Graph node events can be consumed by the dashboard."
+      ]
+    },
+    {
+      "id": "AGT-002",
+      "module": "agents",
+      "name": "Energy, Comfort, and Supervisor agents",
+      "description": "Implement role prompts and typed outputs for energy proposal, PMV assessment, conflict resolution, explanation, and reflection.",
+      "priority": "high",
+      "status": "todo",
+      "dependencies": [
+        "AGT-001"
+      ],
+      "acceptanceCriteria": [
+        "Each role has a distinct input/output contract.",
+        "The supervisor references both energy and comfort evidence.",
+        "Reflection compares predicted and measured outcomes."
+      ]
+    },
+    {
+      "id": "MET-001",
+      "module": "metrics",
+      "name": "Audit log and quantitative evaluation",
+      "description": "Persist observation, action, graph-event, error, and summary records; calculate energy, cost, PMV, autonomy, and reliability metrics.",
+      "priority": "critical",
+      "status": "todo",
+      "dependencies": [
+        "SIM-002",
+        "AGT-001"
+      ],
+      "acceptanceCriteria": [
+        "Every decision is traceable by run and decision ID.",
+        "Baseline and controlled summaries use the same calculation code.",
+        "Comparison output includes kWh savings and occupied PMV compliance."
+      ]
+    },
+    {
+      "id": "RUN-001",
+      "module": "integration",
+      "name": "Closed-loop controlled experiment",
+      "description": "Execute and tune the seven-day agent-controlled New Delhi simulation, then produce the accepted baseline comparison.",
+      "priority": "critical",
+      "status": "todo",
+      "dependencies": [
+        "AGT-002",
+        "MET-001"
+      ],
+      "acceptanceCriteria": [
+        "The controlled run completes without an unhandled exception.",
+        "No unsafe action is applied.",
+        "HVAC energy is lower than baseline and occupied PMV compliance is at least 90%."
+      ]
+    },
+    {
+      "id": "UI-001",
+      "module": "dashboard",
+      "name": "Streamlit results dashboard",
+      "description": "Visualize current graph state, PMV, temperature, setpoint, cumulative energy, decisions, savings, compliance, rejections, and fallbacks.",
+      "priority": "high",
+      "status": "todo",
+      "dependencies": [
+        "MET-001"
+      ],
+      "acceptanceCriteria": [
+        "The dashboard loads a live or completed run locally.",
+        "All judging metrics are visible and correctly labeled.",
+        "The dashboard remains read-only and cannot corrupt a run."
+      ]
+    },
+    {
+      "id": "TST-001",
+      "module": "quality",
+      "name": "Automated and manual verification",
+      "description": "Complete unit, graph, MCP contract, EnergyPlus smoke, integration, repeatability, and dashboard tests.",
+      "priority": "critical",
+      "status": "todo",
+      "dependencies": [
+        "RUN-001",
+        "UI-001"
+      ],
+      "acceptanceCriteria": [
+        "All automated checks pass from a clean environment.",
+        "The final controlled run meets required acceptance criteria.",
+        "A manual demo rehearsal completes without intervention."
+      ]
+    },
+    {
+      "id": "DEL-001",
+      "module": "delivery",
+      "name": "Hackathon submission package",
+      "description": "Finalize README and architecture report, public GitHub repository, curated run artifacts, presentation, three-minute video, and upload package.",
+      "priority": "critical",
+      "status": "todo",
+      "dependencies": [
+        "TST-001"
+      ],
+      "acceptanceCriteria": [
+        "The public repository URL is accessible.",
+        "All problem-statement deliverables are included.",
+        "The presentation and video accurately demonstrate the active closed loop and measured results."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "1.0",
+  "feature": "SIM-002",
+  "validatedAt": "2026-07-26T01:39:20+05:30",
+  "executionMode": "Two simultaneous independent baseline CLI processes",
+  "runs": [
+    {
+      "runId": "baseline-sim002-isolated-a",
+      "artifactDirectory": "runs/baseline-sim002-isolated-a",
+      "energyPlusExitCode": 0,
+      "severeErrors": 0,
+      "warnings": 2,
+      "timestepCount": 672,
+      "zoneObservationCount": 3360,
+      "hvacElectricityJ": 145190101.8003747,
+      "hvacElectricityKwh": 40.330583833437416,
+      "occupiedSamples": 1100,
+      "occupiedPmvCompliancePercent": 76.0,
+      "meanOccupiedPmv": -0.31213909910641896,
+      "meanOccupiedPpdPercent": 7.986975781373332
+    },
+    {
+      "runId": "baseline-sim002-isolated-b",
+      "artifactDirectory": "runs/baseline-sim002-isolated-b",
+      "energyPlusExitCode": 0,
+      "severeErrors": 0,
+      "warnings": 2,
+      "timestepCount": 672,
+      "zoneObservationCount": 3360,
+      "hvacElectricityJ": 145190101.8003747,
+      "hvacElectricityKwh": 40.330583833437416,
+      "occupiedSamples": 1100,
+      "occupiedPmvCompliancePercent": 76.0,
+      "meanOccupiedPmv": -0.31213909910641896,
+      "meanOccupiedPpdPercent": 7.986975781373332
+    }
+  ],
+  "inputs": {
+    "model": {
+      "path": "models/5ZoneAirCooled.baseline.v1.idf",
+      "sha256": "88CD53D18610BD7B36C7BC785B20574F2B8FC7655AC22D3FA49225B2664A34F1"
+    },
+    "weather": {
+      "path": "weather/IND_DL_New.Delhi-Safdarjung.AP.421820_TMYx.2011-2025.epw",
+      "sha256": "8201E41AA7517016558C369053A06B000ED038647DCDD0681512C3775DDE486B"
+    },
+    "energyPlus": {
+      "version": "26.1.0",
+      "build": "6f2e40d102"
+    },
+    "runPeriod": "May 23-29, simulation year 2011",
+    "timestepsPerHour": 4
+  },
+  "comparison": {
+    "calculationPath": "bms_agent.simulation.baseline.compare_summaries",
+    "energyDifferenceKwh": 0.0,
+    "energyAbsoluteToleranceKwh": 1e-09,
+    "comfortDifferencePercentagePoints": 0.0,
+    "comfortAbsoluteTolerancePercentagePoints": 1e-09,
+    "passed": true
+  },
+  "comfortDistribution": {
+    "coldBelowMinusOne": 5,
+    "coldMinusOneToMinusPointFive": 259,
+    "comfortableMinusPointFiveToPointFive": 836,
+    "warmPointFiveToOne": 0,
+    "hotAboveOne": 0
+  },
+  "concurrencyRegression": {
+    "originalFailedRun": "runs/baseline-sim002-acceptance-a",
+    "originalSymptom": "EnergyPlus -r sidecar/audit collision during concurrent execution",
+    "preservation": "The failed run and collision RVI/MVI files remain in its unique run directory.",
+    "fix": "Each run executes a hash-verified staged input.idf with its unique run directory as the process working directory.",
+    "automatedTest": "test_concurrent_baselines_isolate_readvars_sidecars",
+    "result": "passed"
+  }
+}
+

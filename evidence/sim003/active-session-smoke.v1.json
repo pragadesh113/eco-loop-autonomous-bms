@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "1.0",
+  "feature": "SIM-003",
+  "validatedAt": "2026-07-26T01:56:33+05:30",
+  "passed": true,
+  "runId": "sim003-smoke-20260726-015626",
+  "artifactDirectory": "runs/sim003-smoke-20260726-015626",
+  "runtime": {
+    "energyPlusVersion": "26.1.0",
+    "energyPlusBuild": "6f2e40d102",
+    "exitCode": 0,
+    "status": "completed",
+    "weatherTimesteps": 96,
+    "hourlyObservations": 24,
+    "actionsApplied": 1,
+    "failure": null
+  },
+  "inputs": {
+    "controlledModelSha256": "E0C692603F1558EFC28878F274043264E94FB83AF59B9A3A5767634F14F3A13B",
+    "weatherSha256": "8201E41AA7517016558C369053A06B000ED038647DCDD0681512C3775DDE486B"
+  },
+  "handleEvidence": {
+    "apiDataSha256": "677EAF62117DF2643CBD225605AE6E17D3C0853CC2ACBD0FBE7F1BBA93B53152",
+    "missingHandles": [],
+    "actuatorDictionaryRecord": "Actuator,Schedule:Compact,Schedule Value,CLG-SETP-SCH,[ ]",
+    "resolvedInputs": [
+      "Five Zone Mean Air Temperature variables",
+      "Five Fanger PMV variables",
+      "Five Fanger PPD variables",
+      "Five People Occupant Count variables",
+      "Five Zone Thermostat Cooling Setpoint Temperature variables",
+      "Site Outdoor Air Drybulb Temperature",
+      "CLG-SETP-SCH Schedule Value",
+      "Electricity:HVAC meter",
+      "Schedule:Compact / Schedule Value / CLG-SETP-SCH actuator"
+    ]
+  },
+  "action": {
+    "decisionId": "sim003-smoke-20260726-015626-decision-0010",
+    "observationSequence": 10,
+    "simulationTime": "May 23 09:15",
+    "occupied": true,
+    "beforeSharedScheduleC": 23.9,
+    "beforeFiveZoneCoolingSetpointsC": [
+      23.9,
+      23.9,
+      23.9,
+      23.9,
+      23.9
+    ],
+    "requestedSetpointC": 25.0,
+    "actuatorValueAfterWriteC": 25.0,
+    "observedSharedScheduleC": 25.0,
+    "observedFiveZoneCoolingSetpointsC": [
+      25.0,
+      25.0,
+      25.0,
+      25.0,
+      25.0
+    ]
+  },
+  "artifactHashes": {
+    "actionsJsonl": "3F5467C203457D963BC9B598445F15230C0C5199852CBE24C058E254272932D5",
+    "smokeResult": "24DCB2CBD3CA4C557C9BFE5F3CBCFB2C5556F1DAB4DEAF49F196074B0C96C73B",
+    "sessionResult": "BA44933BA34EBDC66E1EF86EB94144AF4C9BD92017E19604BD2C89B897A687D2"
+  }
+}
+
