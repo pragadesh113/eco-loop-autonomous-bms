@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "1.0",
+  "featureId": "LLM-001",
+  "recordedAtUtc": "2026-07-25T21:27:57.445616+00:00",
+  "authority": "advisory_only",
+  "actuationAttempted": false,
+  "provider": {
+    "pythonPackage": "ollama",
+    "pythonPackageVersion": "0.6.2",
+    "host": "http://127.0.0.1:11434",
+    "stream": false,
+    "think": false,
+    "temperature": 0.0,
+    "seed": 0,
+    "maxOutputTokens": 64,
+    "keepAlive": "10m",
+    "productionDefaultTimeoutSeconds": 8.0,
+    "smokeTimeoutOverrideSeconds": 30.0,
+    "sequential": true
+  },
+  "model": {
+    "tag": "qwen3:4b-instruct",
+    "digest": "0edcdef34593eac1aa2be9c7d06c432dcf81945adca5eca2f27662c18f168ba0",
+    "parameterSize": "4.0B",
+    "quantization": "Q4_K_M",
+    "fallbackInstalled": false,
+    "modelPulledOrInstalled": false
+  },
+  "results": [
+    {
+      "role": "energy",
+      "schema": "EnergyProposal",
+      "status": "success",
+      "attemptCount": 1,
+      "correctionAttempted": false,
+      "wallDurationMs": 5537.237599957734,
+      "apiDurationMs": 5510.8666,
+      "promptTokens": 71,
+      "generatedTokens": 56,
+      "typedOutput": {
+        "proposed_setpoint_c": 25.0,
+        "expected_energy_effect": "reduce",
+        "confidence": 0.98,
+        "reason": "warm PMV, reduce setpoint"
+      }
+    },
+    {
+      "role": "comfort",
+      "schema": "ComfortAssessment",
+      "status": "success",
+      "attemptCount": 1,
+      "correctionAttempted": false,
+      "wallDurationMs": 3652.0679000532255,
+      "apiDurationMs": 3645.7651,
+      "promptTokens": 70,
+      "generatedTokens": 36,
+      "typedOutput": {
+        "comfort_state": "cold",
+        "recommended_direction": "raise",
+        "risk": "target_violation",
+        "reason": "temperature too low"
+      }
+    },
+    {
+      "role": "supervisor",
+      "schema": "SupervisorDecision",
+      "status": "success",
+      "attemptCount": 1,
+      "correctionAttempted": false,
+      "wallDurationMs": 5026.23419999145,
+      "apiDurationMs": 5018.987,
+      "promptTokens": 65,
+      "generatedTokens": 53,
+      "typedOutput": {
+        "disposition": "accept",
+        "proposed_setpoint_c": 25.0,
+        "conflict": false,
+        "energy_evidence": "25C supports raise",
+        "comfort_evidence": "25C reduces cooling"
+      }
+    }
+  ],
+  "safetyObservation": "Schema success does not establish semantic correctness; deterministic validation remains mandatory.",
+  "artifacts": {
+    "attemptAudit": ".cache/validation/llm001/attempts-20260725T212743047876Z.jsonl"
+  },
+  "sha256": {
+    "attemptAudit": "42791D990CC1553C9D4949EC844B1CC8E61EACA4ADC0008D5232F3E058F227EC"
+  }
+}

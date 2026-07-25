@@ -1,16 +1,17 @@
 # Project Progress
 
-Last synchronized: 2026-07-26 02:23 IST
+Last synchronized: 2026-07-26 03:19 IST
 
 `docs/featurelist.json` is the canonical feature registry. This file is its human-readable execution checklist. A checkbox is marked only after the corresponding acceptance criteria pass.
 
 ## Overall status
 
-- Completed: 8 of 17 features
-- In progress: 1
+- Completed: 10 of 17 features
+- In progress or rework: 1
 - Blocked: 0
-- Remaining: 8
-- Current stage: `CTL-001` deterministic safety validator and fallback is in progress.
+- Remaining todo: 6
+- Current stage: `LLM-001` is approved; `AGT-001` typed LangGraph state machine is in
+  progress.
 
 ## Feature checklist
 
@@ -26,6 +27,8 @@ Last synchronized: 2026-07-26 02:23 IST
 
 - [x] `FND-001` Python repository scaffold — **done**
   - Evidence: Git repository initialized on `main`.
+  - Evidence: verified Gate 3 checkpoint committed locally as `1ea849b` on
+    `codex/hackathon-delivery`; no remote push performed.
   - Evidence: editable package installed in `.venv` with Python 3.12.1.
   - Evidence: Ruff passed, Pyright reported 0 errors, and Pytest passed 6 tests at 91.67% coverage.
   - Evidence: `.gitignore` excludes secrets, local model weights, EnergyPlus output, weather downloads, and generated runs.
@@ -88,12 +91,58 @@ Last synchronized: 2026-07-26 02:23 IST
     at 92.83% coverage.
   - Independent test: 97 `FastMCP.call_tool` requests produced 97 audit records;
     exactly one physical action was applied under replay/conflict/stale pressure.
-- [ ] `LLM-001` Local structured LLM provider — **todo**
+- [x] `LLM-001` Local structured LLM provider — **done**
+  - Developer evidence: strict role-paired Energy, Comfort, and Supervisor schemas;
+    injectable provider boundary; loopback-only Ollama adapter; 8-second production
+    timeout; 64-token cap; one global correction; three-attempt absolute bound; compact
+    redacted JSONL timing audit; no actuation imports.
+  - Live smoke: the existing Qwen3 4B model returned all three schemas on the first call
+    in 5.54, 3.65, and 5.03 seconds. No model was pulled or modified.
+  - Developer gate: Ruff passed, strict Pyright reported 0 errors, and Pytest passed
+    165 tests at 93.86% coverage.
+  - Independent failure: Energy and Comfort parsed, but Supervisor remained malformed
+    after the single correction under the 64-token cap. `SAFE-006` requires a more
+    compact Supervisor wire schema and a fresh three-role smoke; all failures remained
+    controlled and no actuation occurred.
+  - Rework evidence: the Supervisor wire schema now uses five concise aliases and
+    28-character evidence limits while preserving descriptive internal fields. A fresh
+    three-role smoke passed 3/3 first-attempt calls, followed by 5/5 first-attempt
+    Supervisor parses with no correction or fallback.
+  - Rework gate: Ruff passed, strict Pyright reported 0 errors, and Pytest passed
+    172 tests at 93.87% coverage. `SAFE-006` awaits independent closure.
+  - Independent rework test: fresh Energy/Comfort/Supervisor calls and five additional
+    Supervisor calls all parsed on the first attempt; failure matrices and the full gate
+    passed. Semantic weaknesses remained contained as advisory output. `SAFE-006` is
+    resolved.
 
 ### Control and agents
 
-- [ ] `CTL-001` Safety validator and fallback policy — **in_progress**
-- [ ] `AGT-001` LangGraph typed state machine — **todo**
+- [x] `CTL-001` Safety validator and fallback policy — **done**
+  - Developer evidence: 18 validation and 7 fallback reason codes enforce identity,
+    freshness, complete finite zone data, separate evidence, hard bounds, rate limits,
+    PMV-safe direction, emergency correction, and shared-setpoint conflict hold.
+  - Live integration: a stale proposal authorized zero actions, a substituted `29°C`
+    action was independently rejected, and one validated `24.4°C` cold correction
+    reached the schedule and all five zones.
+  - Developer gate: Ruff passed, strict Pyright reported 0 errors, and Pytest passed
+    116 tests at 93.55% coverage.
+  - Independent failure: an in-bounds post-validation substitution from the guard-approved
+    `24.4°C` to `25.0°C` bypassed semantic/rate authorization and physically wrote once.
+    `SAFE-004` pauses dependent actuation until MCP independently re-authorizes the exact
+    proposal or recomputed fallback and a fresh real-session retest passes.
+  - Independent schema failure: omitted observation unit fields silently received
+    defaults. `SAFE-005` requires explicit `degC`, `dimensionless`, and `people` literals
+    with fail-closed omission tests.
+  - Rework evidence: MCP now reconstructs its own explicit-unit observation and
+    independently validates advisory requests or recomputes fallback. Fresh real runs
+    rejected the `25.0°C` advisory substitution and `24.5°C` fallback mismatch with zero
+    writes; exact server-authorized `24.4°C` advisory/fallback actions wrote once.
+  - Rework gate: Ruff passed, strict Pyright reported 0 errors, and Pytest passed
+    165 tests at 93.86% coverage. `SAFE-004`/`SAFE-005` await independent closure.
+  - Independent rework test: both substitutions caused zero writes, exact server
+    fallback wrote once, replay/idempotency remained bounded, every missing/wrong unit
+    failed closed, and the full gate passed. `SAFE-004` and `SAFE-005` are resolved.
+- [ ] `AGT-001` LangGraph typed state machine — **in_progress**
 - [ ] `AGT-002` Energy, Comfort, and Supervisor agents — **todo**
 
 ### Metrics and integration

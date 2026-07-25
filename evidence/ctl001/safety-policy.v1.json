@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "1.0",
+  "featureId": "CTL-001",
+  "policy": {
+    "setpointBoundsC": [
+      22.0,
+      28.0
+    ],
+    "normalRateLimitC": 1.0,
+    "fallbackStepC": 0.5,
+    "occupiedComfortPmv": [
+      -0.5,
+      0.5
+    ],
+    "occupiedEmergencyPmv": [
+      -1.0,
+      1.0
+    ],
+    "defaultSafeSetpointC": 24.0,
+    "sharedZoneConflictAction": "hold"
+  },
+  "unitTestEvidence": {
+    "targetedTestsPassed": 79,
+    "validationReasonCodesCovered": 18,
+    "fallbackReasonCodesCovered": 7,
+    "nonFiniteValues": [
+      "NaN",
+      "positive infinity",
+      "negative infinity"
+    ],
+    "exactBoundariesCovered": true,
+    "requiredUnitContractsCovered": true
+  },
+  "repositoryGate": {
+    "testsPassed": 165,
+    "coveragePercent": 93.86,
+    "ruff": "passed",
+    "strictPyrightErrors": 0
+  },
+  "liveIntegration": {
+    "runId": "pytest-ctl-mcp-beb98169ef",
+    "status": "completed",
+    "exitCode": 0,
+    "weatherTimesteps": 96,
+    "observations": 24,
+    "staleGuardResult": "STALE_OBSERVATION",
+    "actionsBeforeApprovedRoute": 0,
+    "substitutedSetpointC": 25.0,
+    "mcpSubstitutionResult": "SAFETY_REJECTED:RATE_LIMIT_EXCEEDED",
+    "actionsAfterSubstitution": 0,
+    "mismatchedFallbackSetpointC": 24.5,
+    "mismatchedFallbackResult": "FALLBACK_MISMATCH",
+    "actionsAfterFallbackMismatch": 0,
+    "acceptedControlSource": "deterministic_fallback",
+    "acceptedFallbackTrigger": null,
+    "exactFallbackReplayCached": true,
+    "changedFallbackTriggerSameKeyResult": "IDEMPOTENCY_CONFLICT",
+    "validatedSetpointC": 24.4,
+    "actionsApplied": 1,
+    "observedScheduleValueC": 24.4,
+    "observedFiveZoneSetpointsC": [
+      24.4,
+      24.4,
+      24.4,
+      24.4,
+      24.4
+    ]
+  },
+  "advisoryMcpIntegration": {
+    "runId": "pytest-mcp-live-5cd02a32f8",
+    "serverReconstructedObservation": true,
+    "missingContextResult": "SAFETY_CONTEXT_UNAVAILABLE",
+    "staleResult": "SAFETY_REJECTED:STALE_OBSERVATION",
+    "substituted25CResult": "SAFETY_REJECTED:RATE_LIMIT_EXCEEDED",
+    "mismatchedFallbackResult": "FALLBACK_MISMATCH",
+    "exactAdvisorySetpointC": 24.4,
+    "exactReplayCached": true,
+    "changedEvidenceSameKeyResult": "IDEMPOTENCY_CONFLICT",
+    "actionsApplied": 1,
+    "auditBindsSourceEvidenceAndTrigger": true,
+    "actionAuditSha256": "018D74CF23D42A296B6F1217D7E30A29836B67EF939621DC6375ADBF10F38849",
+    "sessionResultSha256": "561FB3898161697FF167370D298CBF95795981BFABA2B93CE633692A888F29CF"
+  },
+  "artifacts": {
+    "runDirectory": "runs/pytest-ctl-mcp-beb98169ef",
+    "actionAudit": "runs/pytest-ctl-mcp-beb98169ef/actions.jsonl",
+    "sessionResult": "runs/pytest-ctl-mcp-beb98169ef/session-result.json",
+    "toolAudit": "runs/mcp-tool-audit.jsonl"
+  },
+  "sha256": {
+    "controlledModelAndStagedInput": "E0C692603F1558EFC28878F274043264E94FB83AF59B9A3A5767634F14F3A13B",
+    "actionAudit": "B40339E235311785AAFBD5840F094F9299E02C0A2B192E6BF1D529864E317FCA",
+    "sessionResult": "2FB7BBD1EC187ED7268CF43099789F60D150E9F120F664F86A5773B5561A71FE"
+  }
+}

@@ -2,7 +2,7 @@
 
 ## Execution status
 
-Last synchronized: 2026-07-26 02:23 IST
+Last synchronized: 2026-07-26 03:19 IST
 
 - [x] `DOC-001` Documentation baseline
 - [x] `FND-001` Python repository scaffold
@@ -15,12 +15,18 @@ Last synchronized: 2026-07-26 02:23 IST
 - [x] `SIM-003` Active EnergyPlus control session
 - [x] `MCP-001` FastMCP EnergyPlus server
 - [x] Gate 3: MCP action changes the live cooling setpoint
-- [ ] `CTL-001` Deterministic safety validator and fallback — in progress
+- [x] `CTL-001` Deterministic safety validator and fallback
+- [x] `LLM-001` Local structured LLM provider
+- [ ] `AGT-001` LangGraph typed state machine — in progress
 
 The implementation remains on the original risk-first sequence. Feasibility evidence
 requires LLM output to be compact and advisory: Qwen3 4B stays as the primary model, but
 deterministic control and validation own decisions and actuation. This safety
 clarification does not change the selected stack or LangGraph multi-agent process.
+Independent testing proved that the MCP boundary must recompute and bind the exact
+semantic authorization, not merely trust a previously validated client value. This
+mandatory rework preserves the architecture: deterministic policy remains authoritative,
+and safe LLM-provider work continues without actuator access.
 
 ## Delivery strategy
 

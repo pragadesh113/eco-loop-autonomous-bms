@@ -1,0 +1,217 @@
+{
+  "schemaVersion": "2.0",
+  "featureId": "LLM-001",
+  "safetyFinding": "SAFE-006",
+  "recordedAtUtc": "2026-07-25T21:43:32.692037+00:00",
+  "authority": "advisory_only",
+  "actuationAttempted": false,
+  "provider": {
+    "pythonPackage": "ollama",
+    "pythonPackageVersion": "0.6.2",
+    "ollamaServerVersion": "0.32.4",
+    "host": "http://127.0.0.1:11434",
+    "stream": false,
+    "think": false,
+    "temperature": 0.0,
+    "seed": 0,
+    "maxOutputTokens": 64,
+    "keepAlive": "10m",
+    "productionDefaultTimeoutSeconds": 8.0,
+    "smokeTimeoutOverrideSeconds": 30.0,
+    "maxCorrectionRequests": 1,
+    "absoluteMaxAttempts": 3,
+    "sequential": true
+  },
+  "supervisorContract": {
+    "internalFields": [
+      "disposition",
+      "proposed_setpoint_c",
+      "conflict",
+      "energy_evidence",
+      "comfort_evidence"
+    ],
+    "wireKeys": [
+      "decision",
+      "setpoint_c",
+      "conflict",
+      "energy",
+      "comfort"
+    ],
+    "schemaRequired": [
+      "decision",
+      "setpoint_c",
+      "conflict",
+      "energy",
+      "comfort"
+    ],
+    "additionalProperties": false,
+    "evidenceMaxLength": 28,
+    "providerAcceptsInternalNamesOnWire": false,
+    "internalConstructionSupported": true,
+    "defaultDumpUsesInternalNames": true,
+    "aliasDumpUsesWireKeys": true
+  },
+  "model": {
+    "tag": "qwen3:4b-instruct",
+    "digest": "0edcdef34593eac1aa2be9c7d06c432dcf81945adca5eca2f27662c18f168ba0",
+    "parameterSize": "4.0B",
+    "quantization": "Q4_K_M",
+    "fallbackInstalled": false,
+    "modelPulledOrInstalled": false
+  },
+  "freshThreeRoleSmoke": [
+    {
+      "role": "energy",
+      "schema": "EnergyProposal",
+      "status": "success",
+      "attemptCount": 1,
+      "correctionAttempted": false,
+      "usedFallback": false,
+      "wallDurationMs": 4656.15669998806,
+      "apiDurationMs": 4646.4273,
+      "promptTokens": 71,
+      "generatedTokens": 56,
+      "typedOutput": {
+        "proposed_setpoint_c": 25.0,
+        "expected_energy_effect": "reduce",
+        "confidence": 0.98,
+        "reason": "warm PMV, reduce setpoint"
+      }
+    },
+    {
+      "role": "comfort",
+      "schema": "ComfortAssessment",
+      "status": "success",
+      "attemptCount": 1,
+      "correctionAttempted": false,
+      "usedFallback": false,
+      "wallDurationMs": 3190.425300039351,
+      "apiDurationMs": 3185.9632,
+      "promptTokens": 70,
+      "generatedTokens": 36,
+      "typedOutput": {
+        "comfort_state": "cold",
+        "recommended_direction": "raise",
+        "risk": "target_violation",
+        "reason": "temperature too low"
+      }
+    },
+    {
+      "role": "supervisor",
+      "schema": "SupervisorDecision",
+      "status": "success",
+      "attemptCount": 1,
+      "correctionAttempted": false,
+      "usedFallback": false,
+      "wallDurationMs": 3841.0803000442684,
+      "apiDurationMs": 3833.4672,
+      "promptTokens": 92,
+      "generatedTokens": 35,
+      "typedOutput": {
+        "disposition": "accept",
+        "proposed_setpoint_c": 25.0,
+        "conflict": false,
+        "energy_evidence": "25",
+        "comfort_evidence": "cold"
+      },
+      "wireOutput": {
+        "decision": "accept",
+        "setpoint_c": 25.0,
+        "conflict": false,
+        "energy": "25",
+        "comfort": "cold"
+      }
+    }
+  ],
+  "consecutiveSupervisorReliability": {
+    "successes": 5,
+    "attempted": 5,
+    "allFirstAttempt": true,
+    "correctionRequests": 0,
+    "fallbackUses": 0,
+    "results": [
+      {
+        "status": "success",
+        "wallDurationMs": 3491.1460001021624,
+        "apiDurationMs": 3486.2262,
+        "promptTokens": 93,
+        "generatedTokens": 35,
+        "wireOutput": {
+          "decision": "accept",
+          "setpoint_c": 25.0,
+          "conflict": false,
+          "energy": "25",
+          "comfort": "cold"
+        }
+      },
+      {
+        "status": "success",
+        "wallDurationMs": 3598.9449999760836,
+        "apiDurationMs": 3593.478,
+        "promptTokens": 94,
+        "generatedTokens": 36,
+        "wireOutput": {
+          "decision": "accept",
+          "setpoint_c": 25.0,
+          "conflict": false,
+          "energy": "25",
+          "comfort": "25"
+        }
+      },
+      {
+        "status": "success",
+        "wallDurationMs": 3674.8773999279365,
+        "apiDurationMs": 3669.5208,
+        "promptTokens": 98,
+        "generatedTokens": 36,
+        "wireOutput": {
+          "decision": "accept",
+          "setpoint_c": 25.0,
+          "conflict": false,
+          "energy": "reduce",
+          "comfort": "cold"
+        }
+      },
+      {
+        "status": "success",
+        "wallDurationMs": 3567.459199926816,
+        "apiDurationMs": 3560.0441,
+        "promptTokens": 90,
+        "generatedTokens": 35,
+        "wireOutput": {
+          "decision": "accept",
+          "setpoint_c": 25.0,
+          "conflict": false,
+          "energy": "25",
+          "comfort": "warm"
+        }
+      },
+      {
+        "status": "success",
+        "wallDurationMs": 3401.068800012581,
+        "apiDurationMs": 3396.3718,
+        "promptTokens": 89,
+        "generatedTokens": 35,
+        "wireOutput": {
+          "decision": "accept",
+          "setpoint_c": 25.0,
+          "conflict": false,
+          "energy": "low",
+          "comfort": "25"
+        }
+      }
+    ]
+  },
+  "safetyObservation": "All outputs remain advisory. Schema-valid evidence can be semantically thin or inconsistent and is logged rather than trusted; deterministic validation remains mandatory.",
+  "auditRedaction": {
+    "promptsStored": false,
+    "rawOutputsStored": false,
+    "thinkingStored": false
+  },
+  "artifacts": {
+    "attemptAudit": ".cache/validation/llm001/safe006-attempts-20260725T214303Z.jsonl"
+  },
+  "sha256": {
+    "attemptAudit": "77EC9CBDBAD5FB725EDD10E1FD6F96BF6218BC3AE6A7BC32C82E0A20D3342DC2"
+  }
+}

@@ -7,10 +7,12 @@
 registered building session per process, and binds network transports to
 `127.0.0.1`. The default transport is stdio.
 
-The MCP layer does not decide whether a setpoint is safe. It validates message
-identity and idempotency, then delegates physical bounds and pending-decision
-validation to `SimulationSession`. The LangGraph supervisor remains responsible for
-comfort policy, reflection, retries, and fallback selection.
+The MCP layer independently binds deterministic safety authorization to the exact
+actuator request. It reconstructs the current observation from its own session
+registry, reruns advisory validation or recomputes deterministic fallback, and passes
+only the server-authorized value to `SimulationSession`. The session then independently
+rechecks physical bounds and pending-decision identity. The LangGraph supervisor remains
+responsible for reflection and routing, but it cannot grant actuator authority.
 
 ## Start the server
 
@@ -71,13 +73,24 @@ people, and energy is joule.
 - `idempotencyKey`: a caller-generated key containing only letters, digits, `.`,
   `_`, or `-`.
 - `setpointC`: the requested shared cooling setpoint.
+- `controlSource`: `advisory_proposal` or `deterministic_fallback`.
+- Advisory source: separate, bounded `energyEvidence` and `comfortEvidence` strings.
+- Fallback source: optional typed `fallbackTrigger`; omitting it recomputes from the
+  current valid observation, while `APPROVED` is never a valid fallback trigger.
 
-The first accepted request writes the action once. Repeating the same key with the
-exact same decision, sequence, and setpoint returns the cached acceptance with
-`cached: true`; it never invokes the actuator again. Reusing the key with a changed
-payload returns `IDEMPOTENCY_CONFLICT`. A different key cannot reuse an already
-consumed decision. Stale sequences and decisions are rejected before actuation.
-Clients must inspect the returned error and must not blindly retry actuator writes.
+For an advisory request, the server reconstructs the full typed observation and
+`ControlProposal`, then calls the deterministic validator. A rejected request returns
+`SAFETY_REJECTED` with its stable reason code. For fallback, the server calls
+`choose_fallback` using the current observed schedule as last-safe; a numeric mismatch
+returns `FALLBACK_MISMATCH`. Missing current observation context fails closed as
+`SAFETY_CONTEXT_UNAVAILABLE`. The raw caller value is never forwarded after these
+checks.
+
+The first accepted request writes the server-authorized action once. Repeating the same
+key with the exact same source, identity, value, evidence, and trigger returns cached
+acceptance. Changing any of them returns `IDEMPOTENCY_CONFLICT`. A different key cannot
+reuse an already consumed decision. Clients must inspect errors and never blindly retry
+actuator writes.
 
 The deterministic session enforces a finite shared setpoint in `22..28 degC`. The
 reported comfort target is occupied PMV `[-0.5, +0.5]`, with emergency bounds
@@ -96,6 +109,7 @@ Expected normalized error codes include:
 - `NO_OBSERVATION` and `OBSERVATION_TIMEOUT`
 - `STALE_ACTION`, `DUPLICATE_ACTION`, `NO_PENDING_ACTION`, and `INVALID_ACTION`
 - `IDEMPOTENCY_CONFLICT`
+- `SAFETY_CONTEXT_UNAVAILABLE`, `SAFETY_REJECTED`, and `FALLBACK_MISMATCH`
 - `ACTIVE_RESET_REFUSED`
 - `STOP_TIMEOUT`
 - `START_FAILED`

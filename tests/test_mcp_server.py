@@ -4,10 +4,12 @@ import asyncio
 import uuid
 from typing import Protocol, TypeVar, cast
 
+import pytest
 from mcp.server.fastmcp import FastMCP
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 from bms_agent.cli import project_root
+from bms_agent.control.safety import ValidationReasonCode
 from bms_agent.mcp_server.server import (
     ActionData,
     ActionRequest,
@@ -39,6 +41,18 @@ class ListedTool(Protocol):
     outputSchema: dict[str, object] | None
 
 
+class ActionAuditRequest(BaseModel):
+    runId: str
+    controlSource: str
+    energyEvidence: str | None = None
+    fallbackTrigger: str | None = None
+
+
+class ActionAuditRecord(BaseModel):
+    tool: str
+    request: ActionAuditRequest
+
+
 async def _call(
     server: FastMCP[object],
     name: str,
@@ -66,6 +80,41 @@ def test_registry_returns_structured_errors_without_a_session() -> None:
     assert response.error.code == "NO_SESSION"
     assert response.error.retryable is False
     assert "Traceback" not in response.error.message
+
+
+def test_action_source_contract_is_typed_and_bounded() -> None:
+    common: dict[str, object] = {
+        "runId": "run",
+        "decisionId": "decision",
+        "observationSequence": 1,
+        "idempotencyKey": "key",
+        "setpointC": 24.0,
+    }
+
+    def action(**changes: object) -> ActionRequest:
+        return ActionRequest.model_validate({**common, **changes})
+
+    with pytest.raises(ValidationError, match="separate energy and comfort"):
+        action(controlSource="advisory_proposal")
+    with pytest.raises(ValidationError, match="cannot carry advisory"):
+        action(
+            controlSource="deterministic_fallback",
+            energyEvidence="not allowed",
+        )
+    with pytest.raises(ValidationError, match="not a valid fallback"):
+        action(
+            controlSource="deterministic_fallback",
+            fallbackTrigger=ValidationReasonCode.APPROVED,
+        )
+    with pytest.raises(ValidationError, match="at most 512"):
+        action(
+            controlSource="advisory_proposal",
+            energyEvidence="x" * 513,
+            comfortEvidence="bounded",
+        )
+
+    no_trigger = action(controlSource="deterministic_fallback")
+    assert no_trigger.fallbackTrigger is None
 
 
 def test_fastmcp_lists_typed_structured_tools() -> None:
@@ -103,7 +152,10 @@ def test_fastmcp_lists_typed_structured_tools() -> None:
         "observationSequence",
         "idempotencyKey",
         "setpointC",
+        "controlSource",
     }
+    properties = cast(dict[str, object], request_schema["properties"])
+    assert {"energyEvidence", "comfortEvidence", "fallbackTrigger"} <= set(properties)
     output_schema = by_name["submit_action"].outputSchema
     assert output_schema is not None
     output_definitions = cast(dict[str, object], output_schema["$defs"])
@@ -155,6 +207,21 @@ def test_real_fastmcp_call_tool_reaches_one_live_actuator() -> None:
         )
         assert no_latest.error is not None
         assert no_latest.error.code == "NO_OBSERVATION"
+        unavailable = await _call(
+            server,
+            "submit_action",
+            ActionRequest(
+                runId=run_id,
+                decisionId="not-yet-available",
+                observationSequence=1,
+                idempotencyKey="no-safety-context",
+                setpointC=24.0,
+                controlSource="deterministic_fallback",
+            ),
+            ToolResponse[ActionData],
+        )
+        assert unavailable.error is not None
+        assert unavailable.error.code == "SAFETY_CONTEXT_UNAVAILABLE"
 
         constraints = await _call(
             server,
@@ -208,18 +275,62 @@ def test_real_fastmcp_call_tool_reaches_one_live_actuator() -> None:
                 decisionId=observation.decisionId,
                 observationSequence=observation.sequence + 1,
                 idempotencyKey="stale-action",
-                setpointC=25.0,
+                setpointC=observation.coolingScheduleValueC,
+                controlSource="advisory_proposal",
+                energyEvidence="Stale read must not authorize energy control.",
+                comfortEvidence="Stale read must not authorize comfort control.",
             ),
             ToolResponse[ActionData],
         )
-        assert stale.error is not None and stale.error.code == "STALE_ACTION"
+        assert stale.error is not None and stale.error.code == "SAFETY_REJECTED"
+        assert stale.error.details["reasonCode"] == "STALE_OBSERVATION"
+
+        target_setpoint = observation.coolingScheduleValueC + 0.5
+        substitution = await _call(
+            server,
+            "submit_action",
+            ActionRequest(
+                runId=run_id,
+                decisionId=observation.decisionId,
+                observationSequence=observation.sequence,
+                idempotencyKey="substituted-action",
+                setpointC=25.0,
+                controlSource="advisory_proposal",
+                energyEvidence="Caller claims an energy benefit.",
+                comfortEvidence="Caller claims comfort remains safe.",
+            ),
+            ToolResponse[ActionData],
+        )
+        assert substitution.error is not None
+        assert substitution.error.code == "SAFETY_REJECTED"
+        assert substitution.error.details["reasonCode"] == "RATE_LIMIT_EXCEEDED"
+
+        fallback_mismatch = await _call(
+            server,
+            "submit_action",
+            ActionRequest(
+                runId=run_id,
+                decisionId=observation.decisionId,
+                observationSequence=observation.sequence,
+                idempotencyKey="fallback-mismatch",
+                setpointC=target_setpoint + 0.1,
+                controlSource="deterministic_fallback",
+                fallbackTrigger=ValidationReasonCode.COLD_CORRECTION_REQUIRED,
+            ),
+            ToolResponse[ActionData],
+        )
+        assert fallback_mismatch.error is not None
+        assert fallback_mismatch.error.code == "FALLBACK_MISMATCH"
 
         action = ActionRequest(
             runId=run_id,
             decisionId=observation.decisionId,
             observationSequence=observation.sequence,
             idempotencyKey="accepted-action",
-            setpointC=25.0,
+            setpointC=target_setpoint,
+            controlSource="advisory_proposal",
+            energyEvidence="A bounded 0.5 C raise reduces cooling demand.",
+            comfortEvidence="All occupied zones are cold; raise toward neutral.",
         )
         accepted = await _call(
             server, "submit_action", action, ToolResponse[ActionData]
@@ -228,7 +339,20 @@ def test_real_fastmcp_call_tool_reaches_one_live_actuator() -> None:
         conflict = await _call(
             server,
             "submit_action",
-            action.model_copy(update={"setpointC": 24.5}),
+            action.model_copy(update={"energyEvidence": "Changed evidence payload."}),
+            ToolResponse[ActionData],
+        )
+        source_conflict = await _call(
+            server,
+            "submit_action",
+            ActionRequest(
+                runId=run_id,
+                decisionId=observation.decisionId,
+                observationSequence=observation.sequence,
+                idempotencyKey="accepted-action",
+                setpointC=target_setpoint,
+                controlSource="deterministic_fallback",
+            ),
             ToolResponse[ActionData],
         )
         duplicate = await _call(
@@ -239,9 +363,13 @@ def test_real_fastmcp_call_tool_reaches_one_live_actuator() -> None:
         )
 
         assert accepted.data is not None and accepted.data.cached is False
+        assert accepted.data.authorizedSetpointC == target_setpoint
+        assert accepted.data.authorizationReasonCode == "APPROVED"
         assert replay.data is not None and replay.data.cached is True
         assert conflict.error is not None
         assert conflict.error.code == "IDEMPOTENCY_CONFLICT"
+        assert source_conflict.error is not None
+        assert source_conflict.error.code == "IDEMPOTENCY_CONFLICT"
         assert duplicate.error is not None
         assert duplicate.error.code == "DUPLICATE_ACTION"
 
@@ -275,8 +403,27 @@ def test_real_fastmcp_call_tool_reaches_one_live_actuator() -> None:
         assert summary.data is not None
         assert summary.data.status == "completed"
         assert summary.data.actionsApplied == 1
-        assert summary.data.latestScheduleValueC == 25.0
-        assert summary.data.latestFiveZoneSetpointsC == [25.0] * 5
+        assert summary.data.latestScheduleValueC == target_setpoint
+        assert summary.data.latestFiveZoneSetpointsC == [target_setpoint] * 5
+
+        audit_records = [
+            ActionAuditRecord.model_validate_json(line)
+            for line in (project_root() / "runs" / "mcp-tool-audit.jsonl")
+            .read_text(encoding="utf-8")
+            .splitlines()
+            if f'"runId": "{run_id}"' in line and '"tool": "submit_action"' in line
+        ]
+        assert audit_records
+        assert all(record.request.controlSource for record in audit_records)
+        assert any(
+            record.request.energyEvidence
+            == "A bounded 0.5 C raise reduces cooling demand."
+            for record in audit_records
+        )
+        assert any(
+            record.request.fallbackTrigger == "COLD_CORRECTION_REQUIRED"
+            for record in audit_records
+        )
 
         stopped = await _call(
             server,

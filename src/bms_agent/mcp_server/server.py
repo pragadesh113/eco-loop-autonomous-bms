@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import threading
 from collections import deque
 from dataclasses import replace
@@ -12,9 +13,18 @@ from pathlib import Path
 from typing import Generic, Literal, TypeVar
 
 from mcp.server.fastmcp import FastMCP
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from bms_agent.cli import project_root
+from bms_agent.control.safety import (
+    ControlProposal,
+    ObservationEnvelope,
+    ObservationSnapshot,
+    ValidationReasonCode,
+    ZoneSnapshot,
+    choose_fallback,
+    validate_proposal,
+)
 from bms_agent.simulation.baseline import (
     COMFORT_LOWER,
     COMFORT_UPPER,
@@ -76,6 +86,26 @@ class ActionRequest(RunRequest):
     observationSequence: int = Field(ge=1)
     idempotencyKey: str = Field(min_length=1, max_length=128, pattern=r"^[A-Za-z0-9._-]+$")
     setpointC: float
+    controlSource: Literal["advisory_proposal", "deterministic_fallback"]
+    energyEvidence: str | None = Field(default=None, min_length=1, max_length=512)
+    comfortEvidence: str | None = Field(default=None, min_length=1, max_length=512)
+    fallbackTrigger: ValidationReasonCode | None = None
+
+    @model_validator(mode="after")
+    def validate_source_contract(self) -> ActionRequest:
+        if self.controlSource == "advisory_proposal":
+            if self.energyEvidence is None or self.comfortEvidence is None:
+                raise ValueError(
+                    "Advisory actions require separate energy and comfort evidence."
+                )
+            if self.fallbackTrigger is not None:
+                raise ValueError("Advisory actions cannot declare a fallback trigger.")
+        else:
+            if self.fallbackTrigger is ValidationReasonCode.APPROVED:
+                raise ValueError("APPROVED is not a valid fallback trigger.")
+            if self.energyEvidence is not None or self.comfortEvidence is not None:
+                raise ValueError("Fallback actions cannot carry advisory evidence.")
+        return self
 
 
 class StopRequest(RunRequest):
@@ -149,6 +179,9 @@ class ActionData(Contract):
     observationSequence: int
     idempotencyKey: str
     requestedSetpointC: float
+    authorizedSetpointC: float
+    controlSource: Literal["advisory_proposal", "deterministic_fallback"]
+    authorizationReasonCode: str
     accepted: bool
     cached: bool
     units: Units = Field(default_factory=Units)
@@ -221,6 +254,35 @@ def _observation_data(observation: ControlObservation) -> ObservationData:
     )
 
 
+def _control_observation_envelope(
+    observation: ControlObservation,
+) -> ObservationEnvelope:
+    return ObservationEnvelope(
+        run_id=observation.run_id,
+        decision_id=observation.decision_id,
+        sequence=observation.sequence,
+        observed_at_utc=(
+            f"simulation-time:{observation.month:02d}-{observation.day:02d}"
+            f"T{observation.hour:02d}:{observation.minute:02d}"
+        ),
+        snapshot=ObservationSnapshot(
+            current_setpoint_c=observation.cooling_schedule_value_c,
+            zones=tuple(
+                ZoneSnapshot(
+                    zone_id=zone.zone,
+                    temperature_c=zone.temperature_c,
+                    pmv=zone.pmv,
+                    occupancy_people=zone.occupancy_people,
+                )
+                for zone in observation.zones
+            ),
+            temperature_unit="degC",
+            pmv_unit="dimensionless",
+            occupancy_unit="people",
+        ),
+    )
+
+
 class SessionRegistry:
     """One-active-session registry with idempotent writes and append-only tool audit."""
 
@@ -230,7 +292,7 @@ class SessionRegistry:
         self._session: SimulationSession | None = None
         self._latest: ControlObservation | None = None
         self._trend: deque[ControlObservation] = deque(maxlen=96)
-        self._idempotency: dict[str, tuple[tuple[str, int, float], ActionData]] = {}
+        self._idempotency: dict[str, tuple[str, ActionData]] = {}
         self._audit_path = root / "runs" / "mcp-tool-audit.jsonl"
 
     def _audit(
@@ -245,7 +307,7 @@ class SessionRegistry:
             "schemaVersion": "1.0",
             "timestampUtc": datetime.now(UTC).isoformat(),
             "tool": tool,
-            "request": request.model_dump(mode="json"),
+            "request": json.loads(request.model_dump_json()),
             "ok": ok,
             "errorCode": error_code,
         }
@@ -419,7 +481,10 @@ class SessionRegistry:
 
     def submit_action(self, request: ActionRequest) -> ToolResponse[ActionData]:
         tool = "submit_action"
-        payload = (request.decisionId, request.observationSequence, request.setpointC)
+        payload = json.dumps(
+            json.loads(request.model_dump_json(exclude={"idempotencyKey"})),
+            sort_keys=True,
+        )
         with self._lock:
             session, error = self._required_session(tool, request)
             if error is not None:
@@ -440,12 +505,112 @@ class SessionRegistry:
                 data = cached_data.model_copy(update={"cached": True})
                 self._audit(tool, request, ok=True)
                 return ToolResponse(ok=True, data=data)
+            observation = self._latest
+            if observation is None:
+                return ToolResponse(
+                    ok=False,
+                    error=self._make_error(
+                        tool,
+                        request,
+                        "SAFETY_CONTEXT_UNAVAILABLE",
+                        "No current server observation is available for authorization.",
+                    ),
+                )
             assert session is not None
+            envelope = _control_observation_envelope(observation)
+            if request.decisionId != observation.decision_id:
+                return ToolResponse(
+                    ok=False,
+                    error=self._make_error(
+                        tool,
+                        request,
+                        "SAFETY_REJECTED",
+                        "Action identity does not match the current server observation.",
+                        details={
+                            "reasonCode": ValidationReasonCode.IDENTITY_MISMATCH.value
+                        },
+                    ),
+                )
+            if request.observationSequence != observation.sequence:
+                return ToolResponse(
+                    ok=False,
+                    error=self._make_error(
+                        tool,
+                        request,
+                        "SAFETY_REJECTED",
+                        "Action sequence does not match the current server observation.",
+                        retryable=True,
+                        details={
+                            "reasonCode": ValidationReasonCode.STALE_OBSERVATION.value
+                        },
+                    ),
+                )
+            authorized_setpoint_c: float
+            authorization_reason: str
+            if request.controlSource == "advisory_proposal":
+                assert request.energyEvidence is not None
+                assert request.comfortEvidence is not None
+                validation = validate_proposal(
+                    envelope,
+                    ControlProposal(
+                        run_id=request.runId,
+                        decision_id=request.decisionId,
+                        observation_sequence=request.observationSequence,
+                        proposed_setpoint_c=request.setpointC,
+                        energy_evidence=request.energyEvidence,
+                        comfort_evidence=request.comfortEvidence,
+                    ),
+                )
+                if not validation.approved or validation.validated_setpoint_c is None:
+                    return ToolResponse(
+                        ok=False,
+                        error=self._make_error(
+                            tool,
+                            request,
+                            "SAFETY_REJECTED",
+                            "Server-side deterministic validation rejected the proposal.",
+                            retryable=validation.reason_code
+                            is ValidationReasonCode.STALE_OBSERVATION,
+                            details={
+                                "reasonCode": validation.reason_code.value,
+                                "evidence": list(validation.evidence),
+                            },
+                        ),
+                    )
+                authorized_setpoint_c = validation.validated_setpoint_c
+                authorization_reason = validation.reason_code.value
+            else:
+                fallback = choose_fallback(
+                    envelope,
+                    last_safe_setpoint_c=observation.cooling_schedule_value_c,
+                    trigger=request.fallbackTrigger,
+                )
+                if not math.isclose(
+                    request.setpointC,
+                    fallback.setpoint_c,
+                    rel_tol=0.0,
+                    abs_tol=1e-9,
+                ):
+                    return ToolResponse(
+                        ok=False,
+                        error=self._make_error(
+                            tool,
+                            request,
+                            "FALLBACK_MISMATCH",
+                            "Requested setpoint does not match server-computed fallback.",
+                            details={
+                                "fallbackReasonCode": fallback.reason_code.value,
+                                "authorizedSetpointC": fallback.setpoint_c,
+                            },
+                        ),
+                    )
+                authorized_setpoint_c = fallback.setpoint_c
+                authorization_reason = fallback.reason_code.value
             try:
                 session.submit_action(
                     decision_id=request.decisionId,
                     observation_sequence=request.observationSequence,
-                    setpoint_c=request.setpointC,
+                    setpoint_c=authorized_setpoint_c,
                 )
             except ActionRejected as rejected:
                 message = str(rejected)
@@ -474,6 +639,9 @@ class SessionRegistry:
                 observationSequence=request.observationSequence,
                 idempotencyKey=request.idempotencyKey,
                 requestedSetpointC=request.setpointC,
+                authorizedSetpointC=authorized_setpoint_c,
+                controlSource=request.controlSource,
+                authorizationReasonCode=authorization_reason,
                 accepted=True,
                 cached=False,
             )
