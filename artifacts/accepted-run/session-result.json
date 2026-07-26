@@ -1,0 +1,10 @@
+{
+  "schema_version": "1.0",
+  "run_id": "controlled-run001-optimized-v3",
+  "status": "completed",
+  "exit_code": 0,
+  "weather_timesteps": 672,
+  "observation_count": 168,
+  "action_count": 168,
+  "failure": null
+}

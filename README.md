@@ -1,65 +1,131 @@
 # Eco-Loop Building Agents
 
-Eco-Loop is a hackathon proof of concept for autonomous, PMV-aware building control.
-EnergyPlus provides the physics-based building environment; a Python LangGraph workflow
-coordinates Energy, Comfort, and Supervisor/Reflection roles; FastMCP exposes sensing and
-control tools; and Streamlit presents the measured baseline-versus-agent results.
+Eco-Loop is a physics-grounded, PMV-aware building control system. EnergyPlus 26.1
+simulates a five-zone New Delhi building while a typed LangGraph workflow coordinates
+Energy, Comfort, Supervisor, and Reflection roles. Every proposed cooling-setpoint
+change crosses a deterministic safety validator and a server-side FastMCP
+reauthorization boundary before it can reach the EnergyPlus actuator.
 
-## Current stage
+## Verified result
 
-The repository foundation and environment feasibility are complete. Read
-[`docs/current-status.md`](docs/current-status.md) before working, then follow the active
-feature and acceptance criteria in [`docs/featurelist.json`](docs/featurelist.json).
+The immutable accepted run is `controlled-run001-optimized-v3`, simulated for May 23–29
+with New Delhi Safdarjung weather:
 
-## Foundation setup
+| Metric | Fixed baseline | Eco-Loop | Change |
+|---|---:|---:|---:|
+| HVAC electricity | 40.3306 kWh | 33.8408 kWh | **16.0914% saved** |
+| Occupied PMV compliance `[-0.5, +0.5]` | 76.00% | **90.64%** | +14.64 pp |
+| Emergency PMV violations | 5 | 5 | no increase |
+| Applied decisions | — | 168/168 | 100% autonomy |
 
-PowerShell:
+EnergyPlus completed all 672 timesteps with zero severe errors. All 168 setpoints were
+inside `22–28°C`, adjacent changes were at most `1°C`, and the approved-action gap was
+zero minutes. Compact verified outputs are committed under
+[`artifacts/accepted-run`](artifacts/accepted-run); the complete local evidence record is
+[`evidence/run001/verification.v1.json`](evidence/run001/verification.v1.json).
 
-```powershell
-uv venv --python 3.12
-uv pip install --python .venv\Scripts\python.exe -e ".[dev]"
-.venv\Scripts\python.exe -m bms_agent.cli doctor
-.venv\Scripts\ruff.exe check .
-.venv\Scripts\pyright.exe
-.venv\Scripts\pytest.exe
+## Architecture
+
+```mermaid
+flowchart LR
+    E["EnergyPlus 26.1<br/>five-zone digital twin"] --> M["FastMCP tools<br/>typed observations"]
+    M --> G["LangGraph<br/>Energy → Comfort → Supervisor"]
+    G --> V["Deterministic validator<br/>PMV, freshness, bounds, rate"]
+    V --> A["FastMCP server reauthorization<br/>exact semantic binding"]
+    A --> E
+    E --> R["Measured outcome<br/>Reflection + audit"]
+    R --> G
+    R --> D["Read-only Streamlit dashboard"]
 ```
 
-The EnergyPlus, agent, MCP, and dashboard dependencies will be installed and locked after
-the environment feasibility feature confirms compatible versions.
+The local Qwen3 4B provider is supported, schema-constrained, sequential, and advisory.
+The accepted result uses the typed deterministic optimizer mode because its output is
+reproducible under the hackathon CPU deadline. Model failure or timeout routes to
+deterministic PMV-aware control; it never grants the model actuator authority. See
+[`docs/architecture.md`](docs/architecture.md) for trust boundaries and design novelty.
 
-## EnergyPlus model preparation
+## Prerequisites
 
-Prepare and validate the pinned New Delhi baseline/controlled models:
+- Windows with Python 3.12 and [`uv`](https://docs.astral.sh/uv/)
+- EnergyPlus 26.1.0
+- New Delhi Safdarjung TMYx 2011–2025 weather
+- Ollama 0.32+ with `qwen3:4b-instruct` only for local-LLM mode
+
+Weather provenance, download URL, and SHA-256 are documented in
+[`docs/model-preparation.md`](docs/model-preparation.md). Large runtimes, model weights,
+weather downloads, and generated runs are intentionally excluded from Git.
+
+## Setup
+
+```powershell
+git clone <PUBLIC_REPOSITORY_URL>
+cd BMS_simulation
+uv sync --locked --all-extras
+Copy-Item .env.example .env
+.\.venv\Scripts\python.exe -m bms_agent.cli doctor --json
+```
+
+Place the verified `.epw`, `.ddy`, and `.stat` files in `weather/`. If EnergyPlus is not
+on `PATH`, set `ENERGYPLUS_HOME` in `.env` or use the documented project-local layout.
+
+Prepare the pinned official model:
 
 ```powershell
 .\.venv\Scripts\python.exe -m bms_agent.simulation.model_prep
-.\scripts\validate_sim001.ps1
 ```
 
-See [`docs/model-preparation.md`](docs/model-preparation.md) for model assumptions,
-weather acquisition, hashes, output requests, and actuator-dictionary evidence.
+## Run the experiment
 
-Run the reproducible fixed-schedule baseline:
+Create the fixed-schedule baseline:
 
 ```powershell
 .\.venv\Scripts\python.exe -m bms_agent.cli run-baseline --json
 ```
 
-See [`docs/baseline-pipeline.md`](docs/baseline-pipeline.md) for the normalized observation
-schema, summary metrics, failure behavior, and repeatability evidence.
-
-Run the real one-day active-session actuator smoke:
+Run the complete reproducible three-role closed loop:
 
 ```powershell
-.\.venv\Scripts\python.exe scripts\run_session_smoke.py
+.\.venv\Scripts\python.exe scripts\run_controlled_experiment.py `
+  --run-id my-controlled-run `
+  --mode deterministic-optimizer
 ```
 
-See [`docs/active-simulation-session.md`](docs/active-simulation-session.md) for callback
-timing, typed observation/action contracts, failure behavior, and actuator proof.
+To exercise Qwen with the same deterministic safety and fallback boundary, use
+`--mode local-llm`. Run IDs are immutable; reuse fails safely without overwriting prior
+evidence.
+
+## Open the dashboard
+
+```powershell
+.\.venv\Scripts\python.exe -m streamlit run src\bms_agent\dashboard\app.py
+```
+
+The dashboard is read-only and shows exact judging KPIs, PMV with the target band, zone
+temperatures, applied setpoint, cumulative baseline/control energy, structured role
+outputs, and all timestamped decision/reflection outcomes.
+
+## Quality gate
+
+```powershell
+uv lock --check
+.\.venv\Scripts\python.exe -m ruff check .
+.\.venv\Scripts\python.exe -m pyright
+.\.venv\Scripts\python.exe -m pytest -q
+```
+
+Final verified gate: **372 tests passed at 90.04% branch coverage**, Ruff clean, Pyright
+zero errors, locked environment resolved 92 packages, and an unattended seven-day
+rehearsal exactly reproduced the accepted result.
 
 ## Documentation
 
-- [`docs/techspec.md`](docs/techspec.md): requirements, architecture, interfaces, and tests.
-- [`docs/plan.md`](docs/plan.md): risk-first 20-hour implementation plan.
-- [`docs/progress.md`](docs/progress.md): full feature checklist.
-- [`agent.md`](agent.md): role definitions and handoff protocol.
+- [`docs/architecture.md`](docs/architecture.md): architecture, novelty, and trust model
+- [`docs/techspec.md`](docs/techspec.md): requirements, contracts, and acceptance tests
+- [`docs/demo-guide.md`](docs/demo-guide.md): three-minute demonstration sequence
+- [`docs/safety-log.md`](docs/safety-log.md): append-only safety findings and mitigations
+- [`docs/current-status.md`](docs/current-status.md): current delivery state
+- [`docs/submission-manifest.md`](docs/submission-manifest.md): deliverable inventory
+
+## License
+
+MIT — see [`LICENSE`](LICENSE).

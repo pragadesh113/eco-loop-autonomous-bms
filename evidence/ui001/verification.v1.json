@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "feature_id": "UI-001",
+  "verified_at_utc": "2026-07-26T07:02:00Z",
+  "verdict": "approved",
+  "run_id": "controlled-run001-optimized-v3",
+  "checks": {
+    "completed_run_load": true,
+    "exact_kpis": true,
+    "pmv_target_band_chart": true,
+    "temperature_setpoint_chart": true,
+    "cumulative_energy_chart": true,
+    "structured_role_outputs": true,
+    "timestamped_reflection_rows": 168,
+    "path_containment": true,
+    "read_only_hash_check": true,
+    "headless_app_exceptions": 0,
+    "loopback_health_http_status": 200,
+    "dashboard_tests_passed": 3,
+    "full_tests_passed": 372,
+    "coverage_percent": 90.04,
+    "ruff": "passed",
+    "pyright_errors": 0,
+    "independent_tester": "passed"
+  },
+  "sha256": {
+    "src/bms_agent/dashboard/__init__.py": "d8f9307037ffc107eb97c2b7ac63429f4d11885861c16acec3b67ee4500fcf00",
+    "src/bms_agent/dashboard/data.py": "2c9f343c6994f439889b50e1eaf6b2e429c2c95770a686ff4b5ae995e8dace8f",
+    "src/bms_agent/dashboard/app.py": "c924c51e87a5ac7b7e81a339b36c120b9879675329b4a6222ed3d68ef7cac587",
+    "tests/test_dashboard.py": "c70446345ddf6a02e1f74496f948b74d74b6b2630602618cd875645168733d10",
+    "pyproject.toml": "cece9ae5042b56415c12bf6605609199915afa642decfad46758c5ca248533ff"
+  }
+}

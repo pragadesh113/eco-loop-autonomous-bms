@@ -1,17 +1,18 @@
 # Project Progress
 
-Last synchronized: 2026-07-26 12:14 IST
+Last synchronized: 2026-07-26 12:52 IST
 
 `docs/featurelist.json` is the canonical feature registry. This file is its human-readable execution checklist. A checkbox is marked only after the corresponding acceptance criteria pass.
 
 ## Overall status
 
-- Completed: 14 of 17 features
-- In progress or rework: 1
+- Completed: 16 of 17 features
+- In progress or rework: 0
+- Waiting approval: 1
 - Blocked: 0
-- Remaining todo: 2
-- Current stage: `RUN-001` independently approved; `UI-001` dashboard implementation
-  is active.
+- Remaining todo: 0
+- Current stage: local `DEL-001` package independently approved; external/PPT/video
+  deliverables are waiting for user approval.
 
 ## Feature checklist
 
@@ -300,9 +301,33 @@ Last synchronized: 2026-07-26 12:14 IST
 
 ### Interface, quality, and delivery
 
-- [ ] `UI-001` Streamlit results dashboard — **in_progress**
-- [ ] `TST-001` Automated and manual verification — **todo**
-- [ ] `DEL-001` Hackathon submission package — **todo**
+- [x] `UI-001` Streamlit results dashboard — **done**
+  - Read-only completed-run discovery and contained typed loading feed KPI cards, PMV
+    target-band, temperature/setpoint, cumulative energy, agent-cycle, and decision
+    chronology views.
+  - Accepted v3 loaded 3,360 observations, 168 actions, and 5,172 graph events with the
+    exact 16.09135% savings and 90.63636% comfort result.
+  - Developer gate: 3 dashboard tests and all 372 tests passed at 90.07% coverage;
+    Ruff/Pyright passed and a real loopback Streamlit health check returned HTTP 200.
+  - Independent approval: accepted v3 AppTest had zero exceptions; all required views
+    and exact KPIs passed. Structured Energy/Comfort/Supervisor outputs and all 168
+    timestamped reflection outcomes were independently verified.
+- [x] `TST-001` Automated and manual verification — **done**
+  - Locked environment sync/check resolved 92 packages; doctor confirmed Python 3.12.1,
+    EnergyPlus 26.1, New Delhi weather, Ollama 0.32.4, and Qwen3 4B.
+  - Final gate: all 372 tests passed at 90.04% coverage; Ruff and Pyright passed.
+  - Unattended rehearsal `tst001-rehearsal-v1` reproduced 672 timesteps, 168 actions,
+    16.09135% savings, 90.63636% PMV compliance, and zero severe errors exactly.
+  - Dashboard rehearsal had zero exceptions; duplicate run invocation exited safely
+    with all accepted artifact hashes unchanged. Independent Tester approved.
+- [ ] `DEL-001` Hackathon submission package — **waiting_approval**
+  - Ready locally: final README, MIT license, architecture report, three-minute demo
+    guide, exact compact accepted artifacts, dashboard screenshot, submission manifest,
+    and feature verification evidence.
+  - Independent local-package review passed with exact metrics, reproducible commands,
+    no secrets, no false public claims, and no PPT/PPTX modification.
+  - Waiting approval: public remote creation/push, presentation work, video
+    recording/upload, public deployment if desired, and portal upload.
 
 ## Milestone gates
 

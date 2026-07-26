@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0",
+  "feature_id": "TST-001",
+  "verified_at_utc": "2026-07-26T07:09:00Z",
+  "verdict": "approved",
+  "rehearsal_run_id": "tst001-rehearsal-v1",
+  "checks": {
+    "uv_sync_locked_all_extras": "passed",
+    "resolved_packages": 92,
+    "doctor": "passed",
+    "full_tests_passed": 372,
+    "coverage_percent": 90.04,
+    "ruff": "passed",
+    "pyright_errors": 0,
+    "uv_lock_check": "passed",
+    "energyplus_weather_timesteps": 672,
+    "actions_applied": 168,
+    "energyplus_exit_code": 0,
+    "energyplus_severe_errors": 0,
+    "controlled_hvac_kwh": 33.84084809588941,
+    "savings_percent": 16.091350832782815,
+    "occupied_pmv_compliance_percent": 90.63636363636364,
+    "dashboard_exceptions": 0,
+    "duplicate_run_exit_code": 2,
+    "duplicate_run_artifacts_unchanged": true,
+    "independent_tester": "passed"
+  },
+  "sha256": {
+    "scripts/run_controlled_experiment.py": "d04689df9b062e4fd5f96a32f53060d1ff69845d0bb0f1601bea39412491f529",
+    "runs/tst001-rehearsal-v1/summary.json": "103f497cd1775caa4622512e2162ef49fa821b3720203173b2d07c23244cccf4",
+    "runs/tst001-rehearsal-v1/comparison.csv": "8eb494cb290a8fb71b8c7c899c52826f51890be65d3d6ff5a1e505b0ed892623",
+    "runs/tst001-rehearsal-v1/session-result.json": "8b768056886a9a22a082ad10d3fd46b0f8d4cc2e94151d5ce3210ca0167fe829",
+    "runs/tst001-rehearsal-v1/eplusout.err": "c99b28ec92fe9d24b33bb66eec75edfe0075f2c380becf02b2fe026544eaa6d3"
+  }
+}

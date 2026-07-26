@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "run_id": "controlled-run001-optimized-v3",
+  "actions_within_22_28_c": 168,
+  "maximum_adjacent_action_change_c": 1.0,
+  "exact_authorized_and_applied_actions": 168,
+  "unique_successful_idempotency_keys": 168,
+  "graph_events": 5172,
+  "graph_errors": 0,
+  "mcp_lifecycle": {
+    "start_simulation": 1,
+    "get_control_constraints": 1,
+    "await_observation": 169,
+    "get_recent_trend": 168,
+    "submit_action": 168,
+    "get_session_status": 168,
+    "stop_simulation": 1,
+    "get_run_summary": 1,
+    "reset_simulation": 1
+  },
+  "terminal_observation_timeout_classified_by_completed_status": true,
+  "energyplus_severe_errors": 0
+}

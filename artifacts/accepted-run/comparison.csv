@@ -1,0 +1,2 @@
+schema_version,run_id,timestamp_utc,baseline_run_id,baseline_hvac_kwh,controlled_hvac_kwh,savings_kwh,savings_percent,baseline_cost_inr,controlled_cost_inr,cost_savings_inr,baseline_compliance_percent,controlled_compliance_percent,baseline_emergency_violations,controlled_emergency_violations
+1.0,controlled-run001-optimized-v3,2026-07-26T06:37:58.733345Z,baseline-sim002-isolated-a,40.330583833437416,33.84084809588941,6.489735737548003,16.091350832782815,322.6446706674993,270.7267847671153,51.91788590038402,76.0,90.63636363636364,5,5

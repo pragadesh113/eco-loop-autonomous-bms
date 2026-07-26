@@ -1,0 +1,41 @@
+{
+  "comfort": {
+    "comfort_violation_minutes": 1545.0,
+    "compliant_samples": 997,
+    "emergency_violation_minutes": 75.0,
+    "emergency_violations": 5,
+    "max_abs_pmv": 1.0442965039749896,
+    "mean_abs_pmv": 0.22683560135649608,
+    "mean_ppd_percent": 6.771219532918137,
+    "occupied_pmv_compliance_percent": 90.63636363636364,
+    "occupied_samples": 1100
+  },
+  "decisions": {
+    "applied": 168,
+    "fallbacks": 30,
+    "max_llm_latency_seconds": null,
+    "max_mcp_latency_seconds": null,
+    "mean_llm_latency_seconds": null,
+    "mean_mcp_latency_seconds": null,
+    "proposed": 168,
+    "rejected": 0,
+    "revisions": 60
+  },
+  "energy": {
+    "cost_inr": 270.7267847671153,
+    "hvac_kwh": 33.84084809588941,
+    "tariff_inr_per_kwh": 8.0
+  },
+  "mode": "controlled",
+  "record_type": "run_summary",
+  "reliability": {
+    "autonomy_percent": 100.0,
+    "errors": 0,
+    "longest_without_approved_action_minutes": 0.0,
+    "recoveries": 0,
+    "reliability_percent": 100.0
+  },
+  "run_id": "controlled-run001-optimized-v3",
+  "schema_version": "1.0",
+  "timestamp_utc": "2026-07-26T06:37:58.733345Z"
+}

@@ -255,7 +255,7 @@
       "name": "Streamlit results dashboard",
       "description": "Visualize current graph state, PMV, temperature, setpoint, cumulative energy, decisions, savings, compliance, rejections, and fallbacks.",
       "priority": "high",
-      "status": "in_progress",
+      "status": "done",
       "dependencies": [
         "MET-001"
       ],
@@ -271,7 +271,7 @@
       "name": "Automated and manual verification",
       "description": "Complete unit, graph, MCP contract, EnergyPlus smoke, integration, repeatability, and dashboard tests.",
       "priority": "critical",
-      "status": "todo",
+      "status": "done",
       "dependencies": [
         "RUN-001",
         "UI-001"
@@ -288,7 +288,7 @@
       "name": "Hackathon submission package",
       "description": "Finalize README and architecture report, public GitHub repository, curated run artifacts, presentation, three-minute video, and upload package.",
       "priority": "critical",
-      "status": "todo",
+      "status": "waiting_approval",
       "dependencies": [
         "TST-001"
       ],

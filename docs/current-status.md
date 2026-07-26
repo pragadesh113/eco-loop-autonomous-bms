@@ -1,14 +1,14 @@
 # Current Status
 
-Last updated: 2026-07-26 12:14 IST
+Last updated: 2026-07-26 12:52 IST
 
 ## Snapshot
 
 - **Project:** Eco-Loop Building Agents
-- **Phase:** Dashboard and quality
-- **Active feature:** `UI-001` Streamlit results dashboard
-- **Feature state:** `in_progress`
-- **Last completed feature:** `RUN-001` Closed-loop controlled experiment
+- **Phase:** Delivery approval gate
+- **Active feature:** `DEL-001` Hackathon submission package
+- **Feature state:** `waiting_approval`
+- **Last completed feature:** `TST-001` Automated and manual verification
 - **Deadline:** July 26, 2026, 11:59 PM IST
 - **Workspace:** `V:\BMS_simulation`
 
@@ -31,6 +31,35 @@ The MCP audit contains one constraints and one reset dispatch. Independent verif
 closed every prior finding, confirmed all 168 actions were bounded and exact, and passed
 36 focused plus all 369 tests at 90.16% coverage with Ruff and strict Pyright clean.
 `RUN-001` and Gate 5 are approved.
+
+`UI-001` Developer work is complete. The Streamlit dashboard is strictly read-only and
+loads only validated, contained completed-run artifacts. It shows the exact accepted
+KPIs, run/node status, five-zone PMV with the target band, temperatures and applied
+setpoint, cumulative baseline/control energy, latest agent-cycle completion, and
+decision/reflection chronology. Three dashboard tests and all 372 tests passed at
+90.07% coverage; Ruff and Pyright passed. The real loopback health endpoint returned
+HTTP 200 before the bounded test server was stopped.
+
+Independent UI testing initially found that role cards showed only completion state and
+the decision table omitted reflection timestamps/outcomes. Rework now reconstructs
+allowlisted structured Energy, Comfort, Supervisor, and Reflection output from persisted
+evidence and joins all 168 decisions to their timestamped reflection results. Independent
+retesting passed the accepted v3 AppTest with zero exceptions and approved `UI-001`.
+
+`TST-001` is independently approved. A locked all-extras sync resolved 92 packages;
+doctor confirmed every local prerequisite. All 372 tests passed at 90.04% coverage with
+Ruff, Pyright, diff, and lock checks clean. The unattended full rehearsal
+`tst001-rehearsal-v1` exactly reproduced the accepted 16.09135% savings and 90.63636%
+comfort result with zero severe errors. A duplicate invocation failed safely without
+changing accepted run artifacts, and the dashboard loaded the rehearsal with zero
+exceptions.
+
+The local `DEL-001` package is ready and independently reviewed: final README, MIT
+license, architecture/novelty report, three-minute demo guide, exact compact accepted
+artifacts, rendered dashboard screenshot, submission manifest, and verification records.
+No remote is configured, nothing is published/deployed/uploaded, and no presentation
+file was touched. The remaining acceptance criteria require explicit external/PPT/video
+authorization.
 
 `ENV-001` passed independent testing and Senior Lead review:
 
@@ -415,15 +444,17 @@ compact, sequential, bounded, and optional.
 
 ## Exact next action
 
-Developer builds the read-only `UI-001` Streamlit dashboard from the accepted v3
-summary, comparison, observations, decisions, and graph events, then Tester runs a
-headless dashboard smoke and metric-correctness checks.
+WAITING_APPROVAL: user must authorize and identify the public GitHub destination; decide
+whether the earlier “do not touch PPT” restriction is now lifted; and choose whether to
+proceed with video recording/upload, optional public dashboard deployment, and portal
+submission. Until then, preserve the verified local package unchanged.
 
 ## Blockers and approvals
 
 - No local implementation blocker.
-- Publishing, public deployment, repository push, video upload, or submission upload
-  remains approval-gated. Those items do not block current safe features.
+- Exact approval needed: permission plus destination for public repository creation/push;
+  permission and template location for presentation work; permission/target for video,
+  optional dashboard deployment, and portal upload.
 
 ## New-agent startup checklist
 

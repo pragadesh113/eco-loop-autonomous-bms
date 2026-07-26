@@ -54,6 +54,9 @@ testpaths = ["tests"]
 [tool.coverage.run]
 branch = true
 source = ["bms_agent"]
+# Streamlit executes this thin entry script in its own ScriptRunner; AppTest covers it
+# headlessly while unit coverage measures the validated dashboard data boundary.
+omit = ["src/bms_agent/dashboard/app.py"]
 
 [tool.coverage.report]
 exclude_also = [
