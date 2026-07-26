@@ -15,6 +15,8 @@ Last updated: 2026-07-26 12:45 IST
 - Compact accepted result under `artifacts/accepted-run/`.
 - Rendered dashboard evidence at `artifacts/dashboard-accepted-run.png`.
 - Interactive scenario-lab evidence at `artifacts/demo/06-live-scenario-lab.png`.
+- Fresh real-EnergyPlus demonstration at
+  `artifacts/demo/09-real-energyplus-live-demo.png`.
 - Feature verification records under `evidence/`.
 - Final local gate: 377 tests, 90.47% branch coverage, Ruff/Pyright/lock clean.
 

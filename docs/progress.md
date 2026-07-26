@@ -1,6 +1,6 @@
 # Project Progress
 
-Last synchronized: 2026-07-26 18:29 IST
+Last synchronized: 2026-07-26 18:36 IST
 
 `docs/featurelist.json` is the canonical feature registry. This file is its human-readable execution checklist. A checkbox is marked only after the corresponding acceptance criteria pass.
 
@@ -298,6 +298,10 @@ Last synchronized: 2026-07-26 18:29 IST
   - Final gate: independent probes closed all four audit/lifecycle findings, verified
     all 168 bounded exact actions, and confirmed the physics metrics. 36 focused tests
     and all 369 tests passed at 90.16% coverage; Ruff and strict Pyright passed.
+  - Fresh user demonstration: `energyplus-live-demo-20260726-1837` ran the full
+    672-timestep/168-decision EnergyPlus loop in 6.05 seconds with zero severe/fatal
+    errors, 168 matching physical actuator records, 16.09135% savings, 90.63636%
+    occupied comfort compliance, and 100% autonomy/reliability.
 
 ### Interface, quality, and delivery
 

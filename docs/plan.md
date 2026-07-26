@@ -2,7 +2,7 @@
 
 ## Execution status
 
-Last synchronized: 2026-07-26 18:29 IST
+Last synchronized: 2026-07-26 18:36 IST
 
 - [x] `DOC-001` Documentation baseline
 - [x] `FND-001` Python repository scaffold
@@ -26,7 +26,8 @@ Last synchronized: 2026-07-26 18:29 IST
 - [x] `MET-001` Audit log and quantitative evaluation — independently approved;
   `SAFE-016` resolved
 - [x] `RUN-001` Closed-loop controlled experiment — independently approved with
-  `controlled-run001-optimized-v3`; Gate 5 passed
+  `controlled-run001-optimized-v3`; Gate 5 passed; fresh real-EnergyPlus demonstration
+  `energyplus-live-demo-20260726-1837` reproduced the accepted metrics
 - [x] `UI-001` Streamlit results dashboard — independently approved
 - [x] `TST-001` Automated and manual verification — independently approved after exact
   unattended seven-day rehearsal

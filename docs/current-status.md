@@ -1,6 +1,6 @@
 # Current Status
 
-Last updated: 2026-07-26 18:29 IST
+Last updated: 2026-07-26 18:36 IST
 
 ## Snapshot
 
@@ -13,6 +13,18 @@ Last updated: 2026-07-26 18:29 IST
 - **Workspace:** `V:\BMS_simulation`
 
 ## Latest work
+
+A fresh full real-EnergyPlus demonstration run
+`energyplus-live-demo-20260726-1837` completed successfully through the production
+LangGraph → FastMCP → EnergyPlus path. EnergyPlus executed all 672 weather timesteps in
+6.05 seconds with zero severe/fatal errors. The graph produced 168 proposals, 60 bounded
+revisions, 30 deterministic fallbacks, and 168 applied actions; `actions.jsonl` contains
+168 physical actuator records whose requested, actuator, shared schedule, and five-zone
+setpoint values agree. The result reproduced 33.84085 kWh controlled HVAC use versus
+40.33058 kWh baseline (16.09135% savings), improved occupied PMV compliance from 76.00%
+to 90.63636%, and reported 100% autonomy/reliability. The run is available in the
+Results selector and its verified dashboard image is
+`artifacts/demo/09-real-energyplus-live-demo.png`. Accepted-run hashes remain unchanged.
 
 The user-reported Live Scenario Lab display defects are resolved. Scenario changes now
 load the matching five inputs and reset prior scenario history/temperature state;
