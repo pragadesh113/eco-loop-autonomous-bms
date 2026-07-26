@@ -1,6 +1,6 @@
 # Project Progress
 
-Last synchronized: 2026-07-26 14:08 IST
+Last synchronized: 2026-07-26 18:29 IST
 
 `docs/featurelist.json` is the canonical feature registry. This file is its human-readable execution checklist. A checkbox is marked only after the corresponding acceptance criteria pass.
 
@@ -338,6 +338,11 @@ Last synchronized: 2026-07-26 14:08 IST
   - Independent approval: 7/7 focused tests, hot/cold emergency and invalid-input
     adversarial probes, unsafe advisory rejection, two-cycle state/reset AppTest,
     filesystem isolation, and accepted-artifact immutability all passed.
+  - Post-approval UI regression fix: scenario selection now resets inputs/history,
+    fallback role cards render valid structured JSON, the provider KPI is compact, and
+    the control-chart legend is separated from its axis. Eight focused tests and all
+    377 tests passed at 90.47% coverage; dark-theme browser verification had zero
+    exceptions/JSON errors.
 - [ ] `DEL-001` Hackathon submission package — **waiting_approval**
   - Ready locally: final README, MIT license, architecture report, three-minute demo
     guide, exact compact accepted artifacts, dashboard screenshot, submission manifest,

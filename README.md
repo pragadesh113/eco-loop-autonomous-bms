@@ -119,7 +119,7 @@ uv lock --check
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
-Final verified gate: **376 tests passed at 90.47% branch coverage**, Ruff clean, Pyright
+Final verified gate: **377 tests passed at 90.47% branch coverage**, Ruff clean, Pyright
 zero errors, locked environment resolved 92 packages, and an unattended seven-day
 rehearsal exactly reproduced the accepted result.
 

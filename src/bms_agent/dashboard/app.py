@@ -222,6 +222,28 @@ _PRESETS: dict[str, tuple[float, float, float, float, float]] = {
     "Unoccupied setback": (35.0, 0.0, 0.0, 24.0, 26.0),
 }
 
+_LAB_INPUT_KEYS = (
+    "live_lab_outdoor",
+    "live_lab_occupancy",
+    "live_lab_disturbance",
+    "live_lab_setpoint",
+    "live_lab_zone_temperature",
+)
+
+
+def _apply_lab_preset() -> None:
+    """Load the selected scenario as a fresh, internally consistent experiment."""
+
+    preset_name = cast(
+        str,
+        st.session_state.get("live_lab_preset", "Normal occupied"),
+    )
+    values = _PRESETS.get(preset_name, _PRESETS["Normal occupied"])
+    for key, value in zip(_LAB_INPUT_KEYS, values, strict=True):
+        st.session_state[key] = value
+    st.session_state.live_lab_history = []
+    st.session_state.pop("live_lab_temperatures", None)
+
 
 def _lab_history() -> list[LabCycle]:
     if "live_lab_history" not in st.session_state:
@@ -275,7 +297,7 @@ def _lab_control_chart(history: list[LabCycle]) -> go.Figure:
     )
     figure.update_layout(
         height=350,
-        margin={"l": 20, "r": 20, "t": 20, "b": 20},
+        margin={"l": 20, "r": 20, "t": 20, "b": 75},
         xaxis_title="Interactive decision step",
         yaxis={"title": "Cooling setpoint (°C)", "range": [21.5, 28.5]},
         yaxis2={
@@ -284,7 +306,13 @@ def _lab_control_chart(history: list[LabCycle]) -> go.Figure:
             "side": "right",
             "rangemode": "tozero",
         },
-        legend={"orientation": "h"},
+        legend={
+            "orientation": "h",
+            "x": 0.5,
+            "xanchor": "center",
+            "y": -0.32,
+            "yanchor": "top",
+        },
     )
     return figure
 
@@ -300,30 +328,53 @@ def _render_live_lab() -> None:
         "Change conditions and run one decision at a time to watch "
         "Energy → Comfort → Supervisor → Safety → Action → Reflection."
     )
-    preset_name = st.selectbox("Scenario", tuple(_PRESETS))
-    outdoor, occupancy, disturbance, setpoint, zone_temperature = _PRESETS[preset_name]
+    if "live_lab_preset" not in st.session_state:
+        st.session_state.live_lab_preset = "Normal occupied"
+        _apply_lab_preset()
+    st.selectbox(
+        "Scenario",
+        tuple(_PRESETS),
+        key="live_lab_preset",
+        on_change=_apply_lab_preset,
+    )
     left, middle, right = st.columns(3)
     with left:
         outdoor_value = st.slider(
-            "Outdoor temperature (°C)", -10.0, 55.0, outdoor, 0.5
+            "Outdoor temperature (°C)",
+            -10.0,
+            55.0,
+            step=0.5,
+            key="live_lab_outdoor",
         )
         occupancy_value = st.slider(
-            "Occupancy per zone (people)", 0.0, 20.0, occupancy, 1.0
+            "Occupancy per zone (people)",
+            0.0,
+            20.0,
+            step=1.0,
+            key="live_lab_occupancy",
         )
     with middle:
         disturbance_value = st.slider(
-            "PMV disturbance", -1.5, 1.5, disturbance, 0.05
+            "PMV disturbance",
+            -1.5,
+            1.5,
+            step=0.05,
+            key="live_lab_disturbance",
         )
         setpoint_value = st.slider(
-            "Current cooling setpoint (°C)", 22.0, 28.0, setpoint, 0.5
+            "Current cooling setpoint (°C)",
+            22.0,
+            28.0,
+            step=0.5,
+            key="live_lab_setpoint",
         )
     with right:
         zone_temperature_value = st.slider(
             "Starting mean zone temperature (°C)",
             15.0,
             40.0,
-            zone_temperature,
-            0.5,
+            step=0.5,
+            key="live_lab_zone_temperature",
         )
         provider_mode = st.selectbox(
             "Agent provider",
@@ -340,12 +391,8 @@ def _render_live_lab() -> None:
 
     run_column, reset_column, status_column = st.columns([1, 1, 3])
     run_clicked = run_column.button("Run one agent cycle", type="primary")
-    reset_clicked = reset_column.button("Reset lab")
+    reset_column.button("Reset lab", on_click=_apply_lab_preset)
     history = _lab_history()
-    if reset_clicked:
-        history.clear()
-        st.session_state.pop("live_lab_temperatures", None)
-        st.rerun()
     if run_clicked:
         previous = cast(
             tuple[float, ...] | None,
@@ -383,7 +430,15 @@ def _render_live_lab() -> None:
     metrics[2].metric(
         "Illustrative HVAC", f"{latest.illustrative_hvac_kwh:.3f} kWh"
     )
-    metrics[3].metric("Provider result", latest.provider_status)
+    provider_value = (
+        "Advisory" if latest.provider_status == "success" else "Fallback"
+    )
+    metrics[3].metric(
+        "Provider result",
+        provider_value,
+        f"LLM {latest.provider_status}",
+        delta_color="off",
+    )
 
     st.subheader("Live agent process")
     st.dataframe(
@@ -402,17 +457,26 @@ def _render_live_lab() -> None:
     energy_text: object = (
         latest.energy_proposal.model_dump()
         if latest.energy_proposal is not None
-        else "Unavailable"
+        else {
+            "status": "unavailable",
+            "authority": "deterministic fallback",
+        }
     )
     comfort_text: object = (
         latest.comfort_assessment.model_dump()
         if latest.comfort_assessment is not None
-        else "Unavailable"
+        else {
+            "status": "unavailable",
+            "authority": "deterministic PMV policy",
+        }
     )
     supervisor_text: object = (
         latest.supervisor_decision.model_dump()
         if latest.supervisor_decision is not None
-        else "Abstained"
+        else {
+            "status": "abstained",
+            "authority": "deterministic safety fallback",
+        }
     )
     role_columns = st.columns(3)
     role_columns[0].markdown("**Energy agent**")

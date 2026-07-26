@@ -1,6 +1,6 @@
 # Current Status
 
-Last updated: 2026-07-26 14:08 IST
+Last updated: 2026-07-26 18:29 IST
 
 ## Snapshot
 
@@ -13,6 +13,15 @@ Last updated: 2026-07-26 14:08 IST
 - **Workspace:** `V:\BMS_simulation`
 
 ## Latest work
+
+The user-reported Live Scenario Lab display defects are resolved. Scenario changes now
+load the matching five inputs and reset prior scenario history/temperature state;
+simulated provider failure renders valid structured status objects rather than JSON
+parse errors; the provider KPI shows a compact `Fallback` state; and the setpoint/HVAC
+legend no longer overlaps the x-axis. A new AppTest covers preset reset and all three
+fallback role cards. Eight focused dashboard tests and the full 377-test suite passed
+at 90.47% coverage, with Ruff and strict Pyright clean. Dark-theme browser verification
+found zero Streamlit exceptions and zero JSON parse errors.
 
 The original problem statement was re-read from all seven images in
 `V:\BMS_automation\questions`. The verified implementation satisfies the core

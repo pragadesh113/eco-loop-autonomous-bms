@@ -2,7 +2,7 @@
 
 ## Execution status
 
-Last synchronized: 2026-07-26 14:08 IST
+Last synchronized: 2026-07-26 18:29 IST
 
 - [x] `DOC-001` Documentation baseline
 - [x] `FND-001` Python repository scaffold
@@ -31,7 +31,8 @@ Last synchronized: 2026-07-26 14:08 IST
 - [x] `TST-001` Automated and manual verification — independently approved after exact
   unattended seven-day rehearsal
 - [x] `LAB-001` Interactive live scenario lab — independently approved with eight-stage
-  LangGraph interaction, safe Qwen fallback, no accepted-run mutation or physical control
+  LangGraph interaction, safe Qwen fallback, no accepted-run mutation or physical
+  control; reported preset/JSON/legend UI regressions resolved and verified
 - [ ] `DEL-001` Hackathon submission package — local package approved; external,
   presentation, video, and upload actions waiting for user approval
 

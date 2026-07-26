@@ -59,7 +59,7 @@ Show cumulative baseline versus controlled HVAC electricity. State the exact val
 ### 2:35–2:55 — Reproducibility and safety
 
 Briefly show the commands in `README.md` and the verification files under `evidence/`.
-State: “The final gate has 376 tests at 90.47% branch coverage, Ruff and Pyright clean,
+State: “The final gate has 377 tests at 90.47% branch coverage, Ruff and Pyright clean,
 zero severe EnergyPlus errors, and an independent unattended rehearsal.”
 
 ### 2:55–3:00 — Close

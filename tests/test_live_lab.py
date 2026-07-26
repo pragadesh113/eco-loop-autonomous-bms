@@ -79,8 +79,7 @@ def test_unoccupied_cycle_moves_toward_energy_setback_within_rate_limit() -> Non
     assert cycle.validation is not None and cycle.validation.approved
 
 
-def test_streamlit_live_lab_step_is_stateful_and_explicitly_isolated(
-) -> None:
+def test_streamlit_live_lab_step_is_stateful_and_explicitly_isolated() -> None:
     app_path = (
         Path(__file__).parents[1] / "src" / "bms_agent" / "dashboard" / "app.py"
     )
@@ -103,3 +102,37 @@ def test_streamlit_live_lab_step_is_stateful_and_explicitly_isolated(
         "Provider result",
     }.issubset(labels)
     assert "No project files written" in app.info[0].value
+
+
+def test_streamlit_preset_reset_and_failure_cards_are_valid_json() -> None:
+    app_path = (
+        Path(__file__).parents[1] / "src" / "bms_agent" / "dashboard" / "app.py"
+    )
+    app = AppTest.from_file(str(app_path)).run(timeout=20)
+    app.radio[0].set_value("Live Scenario Lab").run(timeout=20)
+    app.button[0].click().run(timeout=20)
+
+    app.selectbox[0].set_value("Crowded warm zone").run(timeout=20)
+    assert tuple(slider.value for slider in app.slider) == (
+        38.0,
+        12.0,
+        0.65,
+        24.0,
+        27.0,
+    )
+    assert app.info[0].value.startswith("0 decision cycle(s)")
+
+    app.selectbox[1].set_value("Simulate LLM failure").run(timeout=20)
+    app.button[0].click().run(timeout=20)
+
+    assert not app.exception
+    assert tuple(item.value for item in app.json) == (
+        '{"status": "unavailable", "authority": "deterministic fallback"}',
+        '{"status": "unavailable", "authority": "deterministic PMV policy"}',
+        '{"status": "abstained", "authority": "deterministic safety fallback"}',
+    )
+    provider_metric = next(
+        metric for metric in app.metric if metric.label == "Provider result"
+    )
+    assert provider_metric.value == "Fallback"
+    assert provider_metric.delta == "LLM unavailable"
