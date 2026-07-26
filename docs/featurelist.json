@@ -25,12 +25,13 @@
       "id": "DOC-001",
       "module": "documentation",
       "name": "Engineering documentation baseline",
-      "description": "Create the technical specification, modular feature list, implementation plan, progress tracker, current status, and agent guidance.",
+      "description": "Create the technical specification, comprehensive technical system document, modular feature list, implementation plan, progress tracker, current status, and agent guidance.",
       "priority": "critical",
       "status": "done",
       "dependencies": [],
       "acceptanceCriteria": [
         "All requested documentation files exist.",
+        "technical-document.md explains the complete implemented system, SRS, architecture, modules, workflows, safety, data, testing, operations, results, and limitations.",
         "Feature IDs and statuses agree across featurelist.json and progress.md.",
         "A new agent can identify the current stage and next action from current-status.md."
       ]
@@ -305,9 +306,9 @@
       "id": "DEL-001",
       "module": "delivery",
       "name": "Hackathon submission package",
-      "description": "Finalize README, architecture report, curated run artifacts, supplied-template presentation, sub-three-minute video, public GitHub repository, and upload package. All local deliverables are verified; public publishing and upload remain approval-gated.",
+      "description": "Finalize README, architecture report, curated run artifacts, supplied-template presentation, sub-three-minute video, public GitHub repository, and upload package. All local deliverables are verified; the user authorized publication to github.com/gokulan21/eco-loop-building-agents-hcl, while deployment and submission uploads remain approval-gated.",
       "priority": "critical",
-      "status": "waiting_approval",
+      "status": "in_progress",
       "dependencies": [
         "TST-001",
         "LAB-001"

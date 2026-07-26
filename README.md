@@ -58,8 +58,8 @@ weather downloads, and generated runs are intentionally excluded from Git.
 ## Setup
 
 ```powershell
-git clone <PUBLIC_REPOSITORY_URL>
-cd BMS_simulation
+git clone https://github.com/gokulan21/eco-loop-building-agents-hcl.git
+cd eco-loop-building-agents-hcl
 uv sync --locked --all-extras
 Copy-Item .env.example .env
 .\.venv\Scripts\python.exe -m bms_agent.cli doctor --json
@@ -125,6 +125,8 @@ rehearsal exactly reproduced the accepted result.
 
 ## Documentation
 
+- [`docs/technical-document.md`](docs/technical-document.md): complete system, SRS,
+  architecture, module, workflow, safety, data, testing, operation, and results guide
 - [`docs/architecture.md`](docs/architecture.md): architecture, novelty, and trust model
 - [`docs/techspec.md`](docs/techspec.md): requirements, contracts, and acceptance tests
 - [`docs/demo-guide.md`](docs/demo-guide.md): three-minute demonstration sequence

@@ -1,6 +1,6 @@
 # Submission Manifest
 
-Last updated: 2026-07-26 19:32 IST
+Last updated: 2026-07-26 22:12 IST
 
 ## Ready locally
 
@@ -11,6 +11,7 @@ Last updated: 2026-07-26 19:32 IST
 - Reproducible setup, baseline, controlled-run, dashboard, and test commands in
   `README.md`.
 - Architecture and novelty report in `docs/architecture.md`.
+- Complete technical system reference in `docs/technical-document.md`.
 - Three-minute recording script in `docs/demo-guide.md`.
 - Compact accepted result under `artifacts/accepted-run/`.
 - Rendered dashboard evidence at `artifacts/dashboard-accepted-run.png`.
@@ -19,13 +20,13 @@ Last updated: 2026-07-26 19:32 IST
   `artifacts/demo/09-real-energyplus-live-demo.png`.
 - Completed six-slide supplied-template presentation:
   `deliverables/EcoLoop_Building_Agents_Presentation.pptx`
-  (`SHA-256 16DC7A1AC0755A9C221DC06E9E7357EDA95B82446BA7D50D527FCBE189C7D7D5`).
+  (`SHA-256 19E823B445E8CF5D67736B4FC94C01497AA89B8FEF80EF864DEAF4CC896F4542`).
 - Portal-ready presentation PDF:
   `deliverables/EcoLoop_Building_Agents_Presentation.pdf`
-  (`SHA-256 C0102492F31E889CFA0A3CB8CC8AD9B71C3E967A0378B4077BAD7740A137F662`).
+  (`SHA-256 E5E6B4D5E63DF9205F58756C0C00DA360A4C1F32EC414BB4506DA59A7B878757`).
 - 81.8-second, 1280x720 demonstration video:
   `deliverables/EcoLoop_Building_Agents_Demo.mp4`
-  (`SHA-256 128624CFF3EA0AB316D464DC6205727F9BBBD04013A09AF955C42E314B720CF7`).
+  (`SHA-256 886889CE4CDAE916136F59C1AA459869F23C2C02CC1D6F693AC12DDA99EE0712`).
 - Feature verification records under `evidence/`.
 - Final local gate: 377 tests, 90.47% branch coverage, Ruff/Pyright/lock clean.
 
@@ -55,11 +56,14 @@ Last updated: 2026-07-26 19:32 IST
 
 These are intentionally not claimed complete:
 
-- Public GitHub repository URL: no remote is configured or pushed.
+- Public GitHub repository URL: publication authorized to
+  `https://github.com/gokulan21/eco-loop-building-agents-hcl`; push verification is in
+  progress.
 - Public dashboard deployment URL: not deployed.
 - Demonstration video upload: local MP4 ready; not uploaded.
 - Presentation upload: local PPTX and PDF ready; not uploaded.
 - Portal PDF/ZIP upload: not performed.
 
-Publishing, deployment, upload, and portal submission require an explicit user decision
-and any necessary target/account access.
+GitHub publication has explicit user authorization. Deployment, external media hosting,
+and portal submission still require a separate explicit user decision and any necessary
+target/account access.

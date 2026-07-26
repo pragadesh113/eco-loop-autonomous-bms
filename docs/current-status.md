@@ -1,18 +1,42 @@
 # Current Status
 
-Last updated: 2026-07-26 19:32 IST
+Last updated: 2026-07-26 22:12 IST
 
 ## Snapshot
 
 - **Project:** Eco-Loop Building Agents
-- **Phase:** Delivery approval gate
+- **Phase:** GitHub publication
 - **Active feature:** `DEL-001` Hackathon submission package
-- **Feature state:** `waiting_approval`
+- **Feature state:** `in_progress`
 - **Last completed feature:** `LAB-001` Interactive live scenario lab
 - **Deadline:** July 26, 2026, 11:59 PM IST
 - **Workspace:** `V:\BMS_simulation`
 
 ## Latest work
+
+The user authorized publication of the complete reproducible project and final
+deliverables to
+`https://github.com/gokulan21/eco-loop-building-agents-hcl`. The target contains only
+an initial one-line README. Repository preparation excludes secrets, local runtimes,
+caches, downloaded weather, generated run directories, model weights, and temporary
+presentation artifacts; it explicitly includes the verified MP4, PPTX, and PDF.
+Publication and anonymous-access verification are in progress. Deployment, video
+hosting, and portal upload remain separately approval-gated.
+
+`docs/technical-document.md` now provides a complete 32-section, approximately
+6,900-word technical reference for the implemented project. It reconciles the SRS,
+EnergyPlus experiment, architecture, trust boundaries, real closed-loop workflow,
+LangGraph nodes, deterministic safety, FastMCP tools, provider modes, every source
+module, contracts, artifacts, dashboard/lab separation, testing, operation, results,
+limitations, and safe extension guidance. Its file references, headings, JSON control
+document updates, and terminology were validated against the current source tree.
+
+Participant identity was updated across the submission deliverables to
+`Gokulan Malli Jayaprakash` / `C10421040`. The PPTX and PDF title slides were
+regenerated, and the MP4 opening segment was replaced with the corrected title slide.
+The updated deck passed the overflow and template-fidelity checks; the PDF title page
+and video opening frame were visually verified. No old identity remains in searchable
+project sources.
 
 The user authorized presentation and video work and supplied
 `V:\BMS_automation\ppt_template\IDEA_Presentation_Format.pptx`. The instruction
@@ -79,8 +103,8 @@ Independent Tester review approved `LAB-001`: 7/7 focused tests, hot/cold emerge
 boundary, invalid-input, provider-failure, unsafe-advisory, two-cycle session/reset,
 filesystem-isolation, and accepted-artifact probes passed. The live screenshot is
 `artifacts/demo/06-live-scenario-lab.png`. `LAB-001` is Lead-approved and done.
-`DEL-001` returns to the approval gate for public repository, presentation, video, and
-submission upload actions.
+`DEL-001` is now executing the user-authorized public GitHub publication. External
+video hosting, dashboard deployment, and portal upload remain separately gated.
 
 `RUN-001` completed its Developer gate. The concrete in-process FastMCP gateway now
 dispatches the locked start/constraints/observation/trend/action/status/stop/summary/reset
@@ -125,9 +149,8 @@ exceptions.
 The local `DEL-001` package is ready and independently reviewed: final README, MIT
 license, architecture/novelty report, three-minute demo guide, exact compact accepted
 artifacts, rendered dashboard screenshot, submission manifest, and verification records.
-No remote is configured, nothing is published/deployed/uploaded, and no presentation
-file was touched. The remaining acceptance criteria require explicit external/PPT/video
-authorization.
+The presentation, PDF, and MP4 are complete and verified. GitHub publication is now
+authorized and in progress; deployment and portal uploads remain gated.
 
 `ENV-001` passed independent testing and Senior Lead review:
 
@@ -508,7 +531,8 @@ compact, sequential, bounded, and optional.
 - One shared writable cooling setpoint.
 - Occupied PMV target `[-0.5, +0.5]`; hard and semantic safety is deterministic.
 - Native Windows/project-local runtimes; Docker remains optional.
-- Public GitHub delivery remains an approval-gated external action.
+- Public GitHub delivery is authorized to the repository named above; deployment and
+  portal uploads remain approval-gated external actions.
 
 ## Exact next action
 
