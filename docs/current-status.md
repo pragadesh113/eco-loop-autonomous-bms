@@ -1,13 +1,13 @@
 # Current Status
 
-Last updated: 2026-07-26 22:12 IST
+Last updated: 2026-07-26 22:15 IST
 
 ## Snapshot
 
 - **Project:** Eco-Loop Building Agents
-- **Phase:** GitHub publication
+- **Phase:** GitHub publication access gate
 - **Active feature:** `DEL-001` Hackathon submission package
-- **Feature state:** `in_progress`
+- **Feature state:** `waiting_approval`
 - **Last completed feature:** `LAB-001` Interactive live scenario lab
 - **Deadline:** July 26, 2026, 11:59 PM IST
 - **Workspace:** `V:\BMS_simulation`
@@ -20,8 +20,11 @@ deliverables to
 an initial one-line README. Repository preparation excludes secrets, local runtimes,
 caches, downloaded weather, generated run directories, model weights, and temporary
 presentation artifacts; it explicitly includes the verified MP4, PPTX, and PDF.
-Publication and anonymous-access verification are in progress. Deployment, video
-hosting, and portal upload remain separately approval-gated.
+All content is committed at `09fc8df`. The push was rejected with HTTP 403 because the
+Windows credential helper authenticated as GitHub user `pragadesh113`, which lacks
+write access to the `gokulan21` repository. Authenticate this machine as `gokulan21`
+or grant `pragadesh113` write access, then retry the prepared `HEAD:main` push.
+Deployment, video hosting, and portal upload remain separately approval-gated.
 
 `docs/technical-document.md` now provides a complete 32-section, approximately
 6,900-word technical reference for the implemented project. It reconciles the SRS,

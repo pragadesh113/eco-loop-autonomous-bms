@@ -1,19 +1,19 @@
 # Project Progress
 
-Last synchronized: 2026-07-26 22:12 IST
+Last synchronized: 2026-07-26 22:15 IST
 
 `docs/featurelist.json` is the canonical feature registry. This file is its human-readable execution checklist. A checkbox is marked only after the corresponding acceptance criteria pass.
 
 ## Overall status
 
 - Completed: 17 of 18 features
-- In progress or rework: 1
-- Waiting approval: 0
+- In progress or rework: 0
+- Waiting approval: 1
 - Blocked: 0
 - Remaining todo: 0
-- Current stage: `DEL-001` GitHub publication is authorized and in progress; the
-  accepted EnergyPlus Results view remains immutable. Deployment and portal uploads
-  remain approval-gated.
+- Current stage: `DEL-001` is committed locally and waiting for GitHub write access.
+  The Windows credential helper authenticated as `pragadesh113`, which GitHub rejected
+  for the `gokulan21` repository. Deployment and portal uploads remain approval-gated.
 
 ## Feature checklist
 
@@ -352,7 +352,7 @@ Last synchronized: 2026-07-26 22:12 IST
     the control-chart legend is separated from its axis. Eight focused tests and all
     377 tests passed at 90.47% coverage; dark-theme browser verification had zero
     exceptions/JSON errors.
-- [ ] `DEL-001` Hackathon submission package — **in_progress**
+- [ ] `DEL-001` Hackathon submission package — **waiting_approval**
   - Ready locally: final README, MIT license, architecture report, three-minute demo
     guide, exact compact accepted artifacts, dashboard screenshot, submission manifest,
     and feature verification evidence.
@@ -368,8 +368,10 @@ Last synchronized: 2026-07-26 22:12 IST
     PPTX, portal PDF, and MP4 opening. Overflow, template-fidelity, PDF render, and
     video-frame checks passed after regeneration.
   - GitHub publication authorized for
-    `https://github.com/gokulan21/eco-loop-building-agents-hcl`; push verification is
-    in progress. Video hosting, public deployment, and portal upload remain gated.
+    `https://github.com/gokulan21/eco-loop-building-agents-hcl`; commit `09fc8df` is
+    ready, but the push was rejected because cached account `pragadesh113` lacks write
+    access. Authenticate as `gokulan21` or grant that account repository access.
+    Video hosting, public deployment, and portal upload remain gated.
 
 ## Milestone gates
 
@@ -379,7 +381,7 @@ Last synchronized: 2026-07-26 22:12 IST
 - [x] Gate 4: LangGraph completes approved, retry, fallback, and finish routes.
 - [x] Gate 5: Controlled run saves energy with at least 90% occupied PMV compliance.
 - [ ] Gate 6: Dashboard, tests, video, and presentation are complete locally; public
-  repository publication is in progress.
+  repository publication is waiting for GitHub write access.
 
 ## Progress update procedure
 

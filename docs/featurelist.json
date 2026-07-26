@@ -308,7 +308,7 @@
       "name": "Hackathon submission package",
       "description": "Finalize README, architecture report, curated run artifacts, supplied-template presentation, sub-three-minute video, public GitHub repository, and upload package. All local deliverables are verified; the user authorized publication to github.com/gokulan21/eco-loop-building-agents-hcl, while deployment and submission uploads remain approval-gated.",
       "priority": "critical",
-      "status": "in_progress",
+      "status": "waiting_approval",
       "dependencies": [
         "TST-001",
         "LAB-001"

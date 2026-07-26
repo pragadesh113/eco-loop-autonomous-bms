@@ -1,6 +1,6 @@
 # Submission Manifest
 
-Last updated: 2026-07-26 22:12 IST
+Last updated: 2026-07-26 22:15 IST
 
 ## Ready locally
 
@@ -57,8 +57,9 @@ Last updated: 2026-07-26 22:12 IST
 These are intentionally not claimed complete:
 
 - Public GitHub repository URL: publication authorized to
-  `https://github.com/gokulan21/eco-loop-building-agents-hcl`; push verification is in
-  progress.
+  `https://github.com/gokulan21/eco-loop-building-agents-hcl`; commit `09fc8df` is
+  prepared, but the push received HTTP 403 because cached account `pragadesh113` lacks
+  write access. GitHub authentication or collaborator access is required.
 - Public dashboard deployment URL: not deployed.
 - Demonstration video upload: local MP4 ready; not uploaded.
 - Presentation upload: local PPTX and PDF ready; not uploaded.
