@@ -351,10 +351,16 @@ Last synchronized: 2026-07-26 18:36 IST
   - Ready locally: final README, MIT license, architecture report, three-minute demo
     guide, exact compact accepted artifacts, dashboard screenshot, submission manifest,
     and feature verification evidence.
-  - Independent local-package review passed with exact metrics, reproducible commands,
-    no secrets, no false public claims, and no PPT/PPTX modification.
-  - Waiting approval: public remote creation/push, presentation work, video
-    recording/upload, public deployment if desired, and portal upload.
+  - Presentation completed from the supplied six-slide SIH template:
+    `deliverables/EcoLoop_Building_Agents_Presentation.pptx` plus its portal-ready PDF.
+    All six slides passed visual review, overflow testing, placeholder checks, and
+    template-fidelity validation with zero issues.
+  - An 81.8-second 1280x720 MP4 demonstration is ready at
+    `deliverables/EcoLoop_Building_Agents_Demo.mp4`. It combines verified deck evidence
+    with a live Results-dashboard walkthrough and one isolated Live Scenario Lab cycle;
+    Playwright reported zero console errors.
+  - Waiting approval: public remote creation/push, video upload, public deployment if
+    desired, and portal upload.
 
 ## Milestone gates
 
@@ -363,7 +369,8 @@ Last synchronized: 2026-07-26 18:36 IST
 - [x] Gate 3: MCP action changes a cooling setpoint inside an active EnergyPlus run.
 - [x] Gate 4: LangGraph completes approved, retry, fallback, and finish routes.
 - [x] Gate 5: Controlled run saves energy with at least 90% occupied PMV compliance.
-- [ ] Gate 6: Dashboard, tests, video, presentation, and public repository are complete.
+- [ ] Gate 6: Dashboard, tests, video, and presentation are complete locally; public
+  repository remains approval-gated.
 
 ## Progress update procedure
 

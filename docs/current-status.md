@@ -1,6 +1,6 @@
 # Current Status
 
-Last updated: 2026-07-26 18:36 IST
+Last updated: 2026-07-26 19:32 IST
 
 ## Snapshot
 
@@ -13,6 +13,22 @@ Last updated: 2026-07-26 18:36 IST
 - **Workspace:** `V:\BMS_simulation`
 
 ## Latest work
+
+The user authorized presentation and video work and supplied
+`V:\BMS_automation\ppt_template\IDEA_Presentation_Format.pptx`. The instruction
+slide was removed as directed and the required six-slide structure was preserved.
+`deliverables/EcoLoop_Building_Agents_Presentation.pptx` now contains evidence-bound
+solution, technical approach, feasibility, artifacts, and reference content. It passed
+per-slide visual review, template fidelity with zero issues, and the overflow test with
+no overflow. PowerPoint exported a verified six-page portal PDF at
+`deliverables/EcoLoop_Building_Agents_Presentation.pdf`.
+
+`deliverables/EcoLoop_Building_Agents_Demo.mp4` is an 81.8-second, 1280x720, 30-fps
+local video. It combines the verified presentation frames with a live Streamlit Results
+walkthrough and one interactive Live Scenario Lab cycle. The browser recording completed
+with zero console errors. The deck and video explicitly state that accepted metrics use
+the deterministic optimizer through the autonomous LangGraph/FastMCP/EnergyPlus path,
+while Qwen3 4B is advisory and cannot bypass safety. No file was uploaded or published.
 
 A fresh full real-EnergyPlus demonstration run
 `energyplus-live-demo-20260726-1837` completed successfully through the production
@@ -496,17 +512,16 @@ compact, sequential, bounded, and optional.
 
 ## Exact next action
 
-WAITING_APPROVAL: user must authorize and identify the public GitHub destination; decide
-whether the earlier “do not touch PPT” restriction is now lifted; and choose whether to
-proceed with video recording/upload, optional public dashboard deployment, and portal
-submission. Until then, preserve the verified local package unchanged.
+WAITING_APPROVAL: local presentation, PDF, and video are complete. The user must now
+authorize and identify the public GitHub destination and separately authorize any video
+upload, public dashboard deployment, or portal submission. Until then, preserve the
+verified local deliverables unchanged.
 
 ## Blockers and approvals
 
 - No local implementation blocker.
 - Exact approval needed: permission plus destination for public repository creation/push;
-  permission and template location for presentation work; permission/target for video,
-  optional dashboard deployment, and portal upload.
+  permission/target for video upload, optional dashboard deployment, and portal upload.
 
 ## New-agent startup checklist
 

@@ -305,7 +305,7 @@
       "id": "DEL-001",
       "module": "delivery",
       "name": "Hackathon submission package",
-      "description": "Finalize README and architecture report, public GitHub repository, curated run artifacts, presentation, three-minute video, and upload package.",
+      "description": "Finalize README, architecture report, curated run artifacts, supplied-template presentation, sub-three-minute video, public GitHub repository, and upload package. All local deliverables are verified; public publishing and upload remain approval-gated.",
       "priority": "critical",
       "status": "waiting_approval",
       "dependencies": [
