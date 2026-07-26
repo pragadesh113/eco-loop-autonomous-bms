@@ -2,7 +2,7 @@
 
 ## Execution status
 
-Last synchronized: 2026-07-26 05:18 IST
+Last synchronized: 2026-07-26 11:22 IST
 
 - [x] `DOC-001` Documentation baseline
 - [x] `FND-001` Python repository scaffold
@@ -23,7 +23,10 @@ Last synchronized: 2026-07-26 05:18 IST
 - [x] `AGT-002` Energy, Comfort, and Supervisor agents — independently approved;
   `SAFE-012`, `SAFE-014`, and `SAFE-015` resolved; concrete FastMCP transport
   instantiation remains `RUN-001`
-- [ ] `MET-001` Audit log and quantitative evaluation — development active
+- [x] `MET-001` Audit log and quantitative evaluation — independently approved;
+  `SAFE-016` resolved
+- [ ] `RUN-001` Closed-loop controlled experiment — concrete FastMCP transport and
+  controlled-run integration active
 
 The implementation remains on the original risk-first sequence. Feasibility evidence
 requires LLM output to be compact and advisory: Qwen3 4B stays as the primary model, but

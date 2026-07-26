@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "1.0",
+  "featureId": "MET-001",
+  "verifiedAt": "2026-07-26T11:22:00+05:30",
+  "verdict": "TEST_PASSED",
+  "focusedTests": 23,
+  "fullTests": 353,
+  "coveragePercent": 91.89,
+  "quality": {
+    "ruff": "passed",
+    "pyrightErrors": 0,
+    "lockCheck": "passed",
+    "jsonCheck": "passed",
+    "diffCheck": "passed"
+  },
+  "safety": {
+    "SAFE-016": "resolved",
+    "liveServicesUsed": false,
+    "legacySessionOrMcpWritersChanged": false
+  },
+  "sha256": {
+    "src/bms_agent/metrics/__init__.py": "6E85D562382FC6926AA0F500B42117AA4949E69DF108FC512D0A28BDEEA11425",
+    "src/bms_agent/metrics/contracts.py": "88C3D5B85ECC77F210D90F437DA97D44EFD54BEB8CF56D1CB81ADBBA918F503E",
+    "src/bms_agent/metrics/evaluation.py": "93BF6F0D4AB99A7E28DD8EE4775878759057695F4873EDC610B55C2AFD34CB98",
+    "src/bms_agent/metrics/store.py": "58B9231A0E1B56AFC15D11E07E9B81351546D411B65AA4E99B2EACFE3DCC9E4C",
+    "tests/test_metrics.py": "381BEE7EB5A10EEEBFFA3BA7937A7DCBC2BA7CFE9400CC6646C02CD069E72CD5"
+  }
+}

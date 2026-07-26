@@ -1,17 +1,17 @@
 # Project Progress
 
-Last synchronized: 2026-07-26 05:18 IST
+Last synchronized: 2026-07-26 11:22 IST
 
 `docs/featurelist.json` is the canonical feature registry. This file is its human-readable execution checklist. A checkbox is marked only after the corresponding acceptance criteria pass.
 
 ## Overall status
 
-- Completed: 12 of 17 features
+- Completed: 13 of 17 features
 - In progress or rework: 1
 - Blocked: 0
-- Remaining todo: 4
-- Current stage: `AGT-002` passed independent testing and Senior Lead review;
-  `MET-001` audit and evaluation development is active.
+- Remaining todo: 3
+- Current stage: `MET-001` independently approved; `RUN-001` closed-loop integration
+  and controlled experiment development is active.
 
 ## Feature checklist
 
@@ -33,6 +33,8 @@ Last synchronized: 2026-07-26 05:18 IST
     no remote push performed.
   - Evidence: verified AGT-001 fail-closed workflow checkpoint committed locally as
     `cdba391`; no remote push performed.
+  - Evidence: verified AGT-002 deadline-bound agent runtime checkpoint committed locally
+    as `aebaffd`; no remote push performed.
   - Evidence: editable package installed in `.venv` with Python 3.12.1.
   - Evidence: Ruff passed, Pyright reported 0 errors, and Pytest passed 6 tests at 91.67% coverage.
   - Evidence: `.gitignore` excludes secrets, local model weights, EnergyPlus output, weather downloads, and generated runs.
@@ -270,8 +272,22 @@ Last synchronized: 2026-07-26 05:18 IST
 
 ### Metrics and integration
 
-- [ ] `MET-001` Audit log and quantitative evaluation — **in_progress**
-- [ ] `RUN-001` Closed-loop controlled experiment — **todo**
+- [x] `MET-001` Audit log and quantitative evaluation — **done**
+  - Developer evidence: strict typed records, sequence-deduplicated HVAC energy,
+    occupied PMV/PPD metrics, action/autonomy/reliability counts, shared
+    baseline/controlled evaluation, append-only normalized JSONL, atomic no-overwrite
+    CSV/JSON exports, redaction, and run/path isolation are implemented.
+  - Developer gate: 21 focused tests passed; Ruff and strict Pyright passed; all 351
+    tests passed at 91.81% coverage; lock, JSON, and diff checks passed.
+  - Independent failure: lifecycle records may change `observation_sequence` within one
+    decision or reference a sequence absent from metrics. See `SAFE-016`; bounded
+    exact-correlation rework was required.
+  - Independent approval: exact sequence-change, nonexistent-sequence,
+    duplicate-proposal, ghost event, and unified-trace probes passed. Valid
+    revision/fallback/application correlation passed. The final gate passed 23 focused
+    tests and all 353 tests at 91.89% coverage, plus Ruff, strict Pyright, lock, JSON,
+    and diff checks. `SAFE-016` is resolved.
+- [ ] `RUN-001` Closed-loop controlled experiment — **in_progress**
 
 ### Interface, quality, and delivery
 

@@ -1,12 +1,34 @@
 # Safety and Decision Log
 
-Last updated: 2026-07-26 05:18 IST
+Last updated: 2026-07-26 11:22 IST
 
 This is the append-only project record for unsafe conditions, safety-relevant findings,
 isolated feature pauses, approval needs, and mitigations. Deterministic safety rules in
 `docs/techspec.md` always outrank model output and schedule pressure.
 
 ## Current and recently resolved items
+
+### SAFE-016 — Decision audit lifecycle is not bound to an observed sequence
+
+- **Observed:** 2026-07-26 11:14 IST during independent `MET-001` testing.
+- **Affected feature:** `MET-001` approval only; no live service or actuation was used.
+- **Evidence:** The evaluator accepted a decision proposed for observation sequence 1
+  and applied for sequence 2. It also accepted a proposed/applied decision for sequence
+  99 when the only metric sample was sequence 1.
+- **Risk:** A summary can report an action as traceable while its lifecycle is attached
+  to conflicting or nonexistent physical observations, weakening audit evidence.
+- **Disposition:** Resolved at 2026-07-26 11:22 IST after independent rework testing.
+- **Required approval:** None.
+- **Controls:** Bind every lifecycle record for a decision ID to the proposal's exact
+  observation sequence and require that sequence to exist in the evaluated run samples.
+  Reject conflicting and missing sequences before creating any summary.
+- **Verification required:** Independent tests must mutate one lifecycle sequence,
+  coordinate all records onto a nonexistent sequence, and mix run identities; each
+  must fail closed while valid proposals/revisions/fallbacks/applications still pass.
+- **Verification:** Sequence changes, absent sequences, duplicate proposals per
+  observation, ghost graph/run events, and ghost-only traces all rejected. Valid
+  proposal/rejection/revision/fallback/application plus correlated graph/run events
+  passed. The final gate passed 23 focused and 353 full tests at 91.89% coverage.
 
 Independent rework testing resolved `SAFE-007` through `SAFE-015`, including the
 separate `SAFE-013` event-cardinality root. `AGT-001` and `AGT-002` are approved with

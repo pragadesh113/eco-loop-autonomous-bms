@@ -221,7 +221,7 @@
       "name": "Audit log and quantitative evaluation",
       "description": "Persist observation, action, graph-event, error, and summary records; calculate energy, cost, PMV, autonomy, and reliability metrics.",
       "priority": "critical",
-      "status": "in_progress",
+      "status": "done",
       "dependencies": [
         "SIM-002",
         "AGT-001"
@@ -238,7 +238,7 @@
       "name": "Closed-loop controlled experiment",
       "description": "Execute and tune the seven-day agent-controlled New Delhi simulation, then produce the accepted baseline comparison.",
       "priority": "critical",
-      "status": "todo",
+      "status": "in_progress",
       "dependencies": [
         "AGT-002",
         "MET-001"

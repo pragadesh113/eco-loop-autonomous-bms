@@ -1,14 +1,14 @@
 # Current Status
 
-Last updated: 2026-07-26 05:18 IST
+Last updated: 2026-07-26 11:22 IST
 
 ## Snapshot
 
 - **Project:** Eco-Loop Building Agents
-- **Phase:** Metrics and evaluation
-- **Active feature:** `MET-001` Audit log and quantitative evaluation
+- **Phase:** Closed-loop experiment
+- **Active feature:** `RUN-001` Closed-loop controlled experiment
 - **Feature state:** `in_progress`
-- **Last completed feature:** `AGT-002` Energy, Comfort, and Supervisor agents
+- **Last completed feature:** `MET-001` Audit log and quantitative evaluation
 - **Deadline:** July 26, 2026, 11:59 PM IST
 - **Workspace:** `V:\BMS_simulation`
 
@@ -344,6 +344,29 @@ tests and all 330 tests at 91.56% coverage, plus Ruff, strict Pyright, lock, JSO
 No live service, network, EnergyPlus actuator, or MCP server was used. The concrete
 FastMCP transport remains explicitly deferred to `RUN-001`.
 
+A recoverability checkpoint was created locally as commit `aebaffd` on
+`codex/hackathon-delivery`, containing the approved AGT-002 contracts, runtime, prompts,
+provider integration, tests, evidence, safety closures, and synchronized ledgers.
+Nothing was pushed or published.
+
+`MET-001` development produced strict finite metric contracts, one shared evaluator for
+baseline and controlled modes, sequence-deduplicated whole-building HVAC energy,
+occupied PMV/PPD and decision/reliability metrics, append-only normalized JSONL, and
+atomic no-overwrite exports. The Developer/Lead gate passed 21 focused tests, Ruff,
+strict Pyright, and all 351 tests at 91.81% coverage, plus lock, JSON, and diff checks.
+
+Independent testing isolated `SAFE-016`: decision lifecycle records can change their
+observation sequence between proposal and application, or reference a sequence absent
+from the run's metric samples. Metrics approval is paused for a narrow exact-correlation
+fix. No actuation, simulation, graph, MCP, or earlier feature is affected.
+
+The bounded correlation rework now binds every lifecycle record to one observed
+sequence, permits only one proposed/applied decision per sequence, validates non-null
+graph/run-event decision references, and returns a unified correlated trace. Independent
+testing passed all exact `SAFE-016` probes, 23 focused tests, and all 353 tests at
+91.89% coverage with Ruff, strict Pyright, lock, JSON, and diff checks clean.
+`MET-001` is approved and `SAFE-016` is resolved.
+
 ## Safety state
 
 No AGT-001 or AGT-002 safety item remains open. The next active feature, `MET-001`,
@@ -374,12 +397,11 @@ compact, sequential, bounded, and optional.
 
 ## Exact next action
 
-Developer implements `MET-001` from its acceptance criteria: append-only run/decision
-audit records and one shared quantitative evaluator for baseline and controlled runs.
-It must calculate energy, cost, occupied PMV compliance, PPD, action/rejection/fallback,
-latency, autonomy, and reliability metrics without changing verified actuation code.
-Use deterministic fixtures first; hand the feature to an independent Tester only after
-focused tests, full tests, Ruff, Pyright, lock, JSON, hashes, and diff checks pass.
+Developer implements the smallest real `RUN-001` vertical slice: a concrete FastMCP
+gateway for `AgentGraphRuntime`, controlled-session lifecycle ownership, normalized
+metric/audit capture, and a one-day smoke before the immutable seven-day experiment.
+The gateway must use the verified server-side reauthorization boundary; no direct
+session or actuator access is allowed from agent code.
 
 ## Blockers and approvals
 
