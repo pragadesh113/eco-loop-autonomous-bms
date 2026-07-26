@@ -283,6 +283,25 @@
       ]
     },
     {
+      "id": "LAB-001",
+      "module": "dashboard",
+      "name": "Interactive live scenario lab",
+      "description": "Add an isolated Streamlit simulation sandbox where a user can change weather, occupancy, PMV disturbance, and provider mode, then observe the LangGraph Energy, Comfort, Supervisor, deterministic Safety, Action, and Reflection stages react step by step.",
+      "priority": "high",
+      "status": "done",
+      "dependencies": [
+        "UI-001",
+        "AGT-002",
+        "CTL-001"
+      ],
+      "acceptanceCriteria": [
+        "The completed-run Results view remains read-only and accepted-run artifacts are never mutated.",
+        "User-controlled scenario inputs produce a visible, stateful LangGraph process trace and updated PMV, setpoint, comfort, and energy estimates.",
+        "Local Qwen is selectable, provider failure falls back deterministically, and no output can bypass the existing 22..28 degree Celsius bounds, one-degree rate limit, PMV policy, or simulation-only isolation.",
+        "The lab is explicitly labeled as an illustrative reduced-order sandbox rather than EnergyPlus evidence."
+      ]
+    },
+    {
       "id": "DEL-001",
       "module": "delivery",
       "name": "Hackathon submission package",
@@ -290,7 +309,8 @@
       "priority": "critical",
       "status": "waiting_approval",
       "dependencies": [
-        "TST-001"
+        "TST-001",
+        "LAB-001"
       ],
       "acceptanceCriteria": [
         "The public repository URL is accessible.",

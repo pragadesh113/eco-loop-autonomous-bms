@@ -1,18 +1,18 @@
 # Project Progress
 
-Last synchronized: 2026-07-26 12:52 IST
+Last synchronized: 2026-07-26 14:08 IST
 
 `docs/featurelist.json` is the canonical feature registry. This file is its human-readable execution checklist. A checkbox is marked only after the corresponding acceptance criteria pass.
 
 ## Overall status
 
-- Completed: 16 of 17 features
+- Completed: 17 of 18 features
 - In progress or rework: 0
 - Waiting approval: 1
 - Blocked: 0
 - Remaining todo: 0
-- Current stage: local `DEL-001` package independently approved; external/PPT/video
-  deliverables are waiting for user approval.
+- Current stage: `LAB-001` independently approved; the accepted EnergyPlus Results view
+  remains immutable. Only external/PPT/video `DEL-001` work is waiting for approval.
 
 ## Feature checklist
 
@@ -320,6 +320,24 @@ Last synchronized: 2026-07-26 12:52 IST
     16.09135% savings, 90.63636% PMV compliance, and zero severe errors exactly.
   - Dashboard rehearsal had zero exceptions; duplicate run invocation exited safely
     with all accepted artifact hashes unchanged. Independent Tester approved.
+- [x] `LAB-001` Interactive live scenario lab — **done**
+  - User approved a separate, simulation-only interactive lab after reviewing the
+    read-only judging dashboard.
+  - Scope: adjustable weather, occupancy, PMV disturbance, initial setpoint, provider
+    mode, step execution, visible LangGraph role/safety/action/reflection stages, and
+    stateful charts.
+  - Isolation: the reduced-order sandbox cannot write EnergyPlus sessions or accepted
+    run artifacts and must never be presented as quantitative EnergyPlus evidence.
+  - Developer evidence: eight real LangGraph stages, deterministic and local-Qwen
+    provider modes, safe failure fallback, stateful charts, and AppTest interaction are
+    implemented. All 376 tests passed at 90.47% coverage; Ruff and strict Pyright passed.
+  - Accepted artifact aggregates remained exactly
+    `5A27F6368475B65FBFE96FDBDCE91E5166A245207E24C491973D067FB4D50C39`
+    and `D03ADCD260DC809A63182841EE1AE70193361E822580FD9688980929901AD0E5`.
+    Live visual verification completed with zero Streamlit exceptions.
+  - Independent approval: 7/7 focused tests, hot/cold emergency and invalid-input
+    adversarial probes, unsafe advisory rejection, two-cycle state/reset AppTest,
+    filesystem isolation, and accepted-artifact immutability all passed.
 - [ ] `DEL-001` Hackathon submission package — **waiting_approval**
   - Ready locally: final README, MIT license, architecture report, three-minute demo
     guide, exact compact accepted artifacts, dashboard screenshot, submission manifest,

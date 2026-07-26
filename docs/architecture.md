@@ -45,7 +45,9 @@ and a monotonic action deadline.
    requested value. A client-side “approved” claim is insufficient.
 4. LangGraph coordinates bounded roles and fallback, but does not access the actuator.
 5. Qwen or deterministic role providers are advisory; neither can bypass levels 2–3.
-6. Streamlit is read-only and cannot start, stop, or mutate a run.
+6. Streamlit's Results view is read-only. Its separate Live Scenario Lab runs an
+   in-memory reduced-order LangGraph demonstration and cannot start, stop, or mutate an
+   EnergyPlus/MCP run or accepted artifact.
 
 ## What is novel
 

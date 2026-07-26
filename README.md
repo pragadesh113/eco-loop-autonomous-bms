@@ -100,9 +100,15 @@ evidence.
 .\.venv\Scripts\python.exe -m streamlit run src\bms_agent\dashboard\app.py
 ```
 
-The dashboard is read-only and shows exact judging KPIs, PMV with the target band, zone
-temperatures, applied setpoint, cumulative baseline/control energy, structured role
-outputs, and all timestamped decision/reflection outcomes.
+The default **Results** view is read-only and shows exact judging KPIs, PMV with the
+target band, zone temperatures, applied setpoint, cumulative baseline/control energy,
+structured role outputs, and all timestamped decision/reflection outcomes.
+
+The separate **Live Scenario Lab** lets a user change outdoor temperature, occupancy,
+PMV disturbance, starting temperature, setpoint, and advisory provider, then run the
+LangGraph Energy → Comfort → Supervisor → Safety → Action → Reflection process one
+step at a time. It is an explicitly labeled reduced-order demonstration sandbox: it
+cannot write EnergyPlus, MCP sessions, real equipment, or accepted-run artifacts.
 
 ## Quality gate
 
@@ -113,7 +119,7 @@ uv lock --check
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
-Final verified gate: **372 tests passed at 90.04% branch coverage**, Ruff clean, Pyright
+Final verified gate: **376 tests passed at 90.47% branch coverage**, Ruff clean, Pyright
 zero errors, locked environment resolved 92 packages, and an unattended seven-day
 rehearsal exactly reproduced the accepted result.
 

@@ -14,8 +14,9 @@ Last updated: 2026-07-26 12:45 IST
 - Three-minute recording script in `docs/demo-guide.md`.
 - Compact accepted result under `artifacts/accepted-run/`.
 - Rendered dashboard evidence at `artifacts/dashboard-accepted-run.png`.
+- Interactive scenario-lab evidence at `artifacts/demo/06-live-scenario-lab.png`.
 - Feature verification records under `evidence/`.
-- Final local gate: 372 tests, 90.04% branch coverage, Ruff/Pyright/lock clean.
+- Final local gate: 376 tests, 90.47% branch coverage, Ruff/Pyright/lock clean.
 
 ## Accepted metrics
 

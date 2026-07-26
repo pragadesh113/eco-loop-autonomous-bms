@@ -394,3 +394,25 @@ The implementation should use Python 3.11 or 3.12, `pyproject.toml`, Pydantic v2
 ## 20. Engineering automation
 
 Feature delivery follows the controlled Developer → Tester → Senior Technical Lead state machine in `automation.md`. Work may proceed autonomously only when it is clear, reversible, and inside an already approved feature. Material ambiguity, destructive/system-wide/external actions, credentials, publication, deployment, and submission remain explicit user approval gates.
+# Approved demonstration extension: LAB-001
+
+`LAB-001` adds a separate interactive Live Scenario Lab to the local Streamlit
+dashboard. It is a reduced-order, in-memory simulation for demonstrating how the
+LangGraph Energy, Comfort, Supervisor, Safety, Action, and Reflection process responds
+to adjustable weather, occupancy, PMV disturbance, and setpoint conditions.
+
+The lab must:
+
+- preserve the existing completed-run Results view as strictly read-only;
+- never access an active EnergyPlus actuator, MCP session registry, or accepted-run
+  artifact path;
+- use the existing deterministic `22..28°C` setpoint bounds, maximum `1°C` adjacent
+  change, occupied PMV target `[-0.5, +0.5]`, and emergency band `[-1, +1]`;
+- support local Qwen as an advisory provider and deterministic fallback on unavailable,
+  malformed, slow, or unsafe output;
+- persist state only in the user's Streamlit session;
+- label all sandbox energy and comfort projections as illustrative, not accepted
+  EnergyPlus evidence.
+
+This extension improves live demonstration quality but does not replace `RUN-001`
+evidence or broaden the project to physical building control.

@@ -1,6 +1,6 @@
 # Current Status
 
-Last updated: 2026-07-26 12:52 IST
+Last updated: 2026-07-26 14:08 IST
 
 ## Snapshot
 
@@ -8,11 +8,42 @@ Last updated: 2026-07-26 12:52 IST
 - **Phase:** Delivery approval gate
 - **Active feature:** `DEL-001` Hackathon submission package
 - **Feature state:** `waiting_approval`
-- **Last completed feature:** `TST-001` Automated and manual verification
+- **Last completed feature:** `LAB-001` Interactive live scenario lab
 - **Deadline:** July 26, 2026, 11:59 PM IST
 - **Workspace:** `V:\BMS_simulation`
 
 ## Latest work
+
+The original problem statement was re-read from all seven images in
+`V:\BMS_automation\questions`. The verified implementation satisfies the core
+EnergyPlus feedback, LangGraph/MCP control, automatic forward injection, quantitative
+energy reduction, and occupied PMV comfort requirements. The accepted run proves
+16.09135% HVAC savings with 90.63636% occupied comfort compliance. The principal
+remaining judging gap is presentation of the OSS-LLM path: the accepted reproducible
+run used the typed deterministic optimizer, while local Qwen remains implemented,
+verified, advisory, and safely fallible.
+
+The user approved `LAB-001` as a separate simulation-only Live Scenario Lab with
+adjustable dynamic conditions, a visible agent-to-safety process, and an optional
+local-Qwen mode. It cannot write EnergyPlus sessions or accepted-run artifacts and
+explicitly distinguishes reduced-order demonstration estimates from the accepted
+EnergyPlus evidence.
+
+`LAB-001` passed its Developer gate. The dashboard now has separate Results and Live
+Scenario Lab views. The lab runs eight explicit LangGraph stages, offers deterministic,
+local-Qwen, and simulated-failure provider modes, preserves state across steps, charts
+PMV/setpoint/illustrative HVAC response, and exposes structured role outputs plus
+reflection. Local Qwen failure was reproduced safely and caused a bounded deterministic
+action. All 376 tests passed at 90.47% coverage; Ruff and strict Pyright are clean.
+Playwright completed a live interaction with zero Streamlit exceptions and saved
+`artifacts/demo/06-live-scenario-lab.png`. Accepted-run aggregate hashes are unchanged.
+
+Independent Tester review approved `LAB-001`: 7/7 focused tests, hot/cold emergency,
+boundary, invalid-input, provider-failure, unsafe-advisory, two-cycle session/reset,
+filesystem-isolation, and accepted-artifact probes passed. The live screenshot is
+`artifacts/demo/06-live-scenario-lab.png`. `LAB-001` is Lead-approved and done.
+`DEL-001` returns to the approval gate for public repository, presentation, video, and
+submission upload actions.
 
 `RUN-001` completed its Developer gate. The concrete in-process FastMCP gateway now
 dispatches the locked start/constraints/observation/trend/action/status/stop/summary/reset

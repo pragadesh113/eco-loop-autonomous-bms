@@ -2,7 +2,7 @@
 
 ## Execution status
 
-Last synchronized: 2026-07-26 12:52 IST
+Last synchronized: 2026-07-26 14:08 IST
 
 - [x] `DOC-001` Documentation baseline
 - [x] `FND-001` Python repository scaffold
@@ -30,6 +30,8 @@ Last synchronized: 2026-07-26 12:52 IST
 - [x] `UI-001` Streamlit results dashboard — independently approved
 - [x] `TST-001` Automated and manual verification — independently approved after exact
   unattended seven-day rehearsal
+- [x] `LAB-001` Interactive live scenario lab — independently approved with eight-stage
+  LangGraph interaction, safe Qwen fallback, no accepted-run mutation or physical control
 - [ ] `DEL-001` Hackathon submission package — local package approved; external,
   presentation, video, and upload actions waiting for user approval
 
@@ -41,6 +43,13 @@ Independent testing proved that the MCP boundary must recompute and bind the exa
 semantic authorization, not merely trust a previously validated client value. This
 mandatory rework preserves the architecture: deterministic policy remains authoritative,
 and safe LLM-provider work continues without actuator access.
+
+The user approved `LAB-001` as a post-Gate-5 demonstration extension. It is a
+reduced-order, in-memory scenario sandbox inside the local Streamlit app. It reuses
+LangGraph process stages, typed agent outputs, and the authoritative deterministic
+safety policy, but cannot access EnergyPlus session actuation or accepted artifacts.
+This separation preserves the reproducible experiment while making dynamic agent
+behavior visually demonstrable. Local Qwen is optional and always falls back safely.
 
 ## Delivery strategy
 

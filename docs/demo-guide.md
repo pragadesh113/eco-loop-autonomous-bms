@@ -10,7 +10,7 @@ uv sync --locked --all-extras
 
 Use the accepted `controlled-run001-optimized-v3` run. Keep
 [`docs/architecture.md`](architecture.md) open for the sequence diagram. The dashboard
-is read-only, so navigating it cannot affect simulation evidence.
+defaults to a read-only Results view, so navigating it cannot affect simulation evidence.
 
 ## Recording sequence
 
@@ -39,6 +39,11 @@ decision is bound to one observation, exact setpoint, idempotency key, reflectio
 timestamp, and terminal outcome. Highlight one decision and the exact authorized/applied
 setpoint.
 
+If useful, briefly switch to **Live Scenario Lab**, select “Crowded warm zone,” and run
+one step to show Energy → Comfort → Supervisor → Safety → Action → Reflection. State
+clearly that this view is a reduced-order interaction demo; the Results view and replay
+artifacts are the EnergyPlus proof.
+
 ### 1:25–2:05 — Comfort and physical control
 
 Show the five PMV traces and shaded `[-0.5, +0.5]` target band. Then show zone
@@ -54,7 +59,7 @@ Show cumulative baseline versus controlled HVAC electricity. State the exact val
 ### 2:35–2:55 — Reproducibility and safety
 
 Briefly show the commands in `README.md` and the verification files under `evidence/`.
-State: “The final gate has 372 tests at 90.04% branch coverage, Ruff and Pyright clean,
+State: “The final gate has 376 tests at 90.47% branch coverage, Ruff and Pyright clean,
 zero severe EnergyPlus errors, and an independent unattended rehearsal.”
 
 ### 2:55–3:00 — Close
