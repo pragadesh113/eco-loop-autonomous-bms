@@ -1,17 +1,17 @@
 # Project Progress
 
-Last synchronized: 2026-07-26 11:22 IST
+Last synchronized: 2026-07-26 12:14 IST
 
 `docs/featurelist.json` is the canonical feature registry. This file is its human-readable execution checklist. A checkbox is marked only after the corresponding acceptance criteria pass.
 
 ## Overall status
 
-- Completed: 13 of 17 features
+- Completed: 14 of 17 features
 - In progress or rework: 1
 - Blocked: 0
-- Remaining todo: 3
-- Current stage: `MET-001` independently approved; `RUN-001` closed-loop integration
-  and controlled experiment development is active.
+- Remaining todo: 2
+- Current stage: `RUN-001` independently approved; `UI-001` dashboard implementation
+  is active.
 
 ## Feature checklist
 
@@ -287,11 +287,20 @@ Last synchronized: 2026-07-26 11:22 IST
     revision/fallback/application correlation passed. The final gate passed 23 focused
     tests and all 353 tests at 91.89% coverage, plus Ruff, strict Pyright, lock, JSON,
     and diff checks. `SAFE-016` is resolved.
-- [ ] `RUN-001` Closed-loop controlled experiment — **in_progress**
+- [x] `RUN-001` Closed-loop controlled experiment — **done**
+  - Fresh accepted candidate: `controlled-run001-optimized-v3` completed all 672
+    timesteps with 168/168 server-authorized actions, zero severe EnergyPlus errors,
+    33.84084809588941 kWh, 16.091350832782815% savings, and 90.63636363636364%
+    occupied PMV compliance.
+  - Lifecycle evidence: one start, constraints, stop, summary, and reset call; 168
+    trends/actions/status checks; 100% autonomy and a zero-minute approved-action gap.
+  - Final gate: independent probes closed all four audit/lifecycle findings, verified
+    all 168 bounded exact actions, and confirmed the physics metrics. 36 focused tests
+    and all 369 tests passed at 90.16% coverage; Ruff and strict Pyright passed.
 
 ### Interface, quality, and delivery
 
-- [ ] `UI-001` Streamlit results dashboard — **todo**
+- [ ] `UI-001` Streamlit results dashboard — **in_progress**
 - [ ] `TST-001` Automated and manual verification — **todo**
 - [ ] `DEL-001` Hackathon submission package — **todo**
 
@@ -301,7 +310,7 @@ Last synchronized: 2026-07-26 11:22 IST
 - [x] Gate 2: Baseline produces reproducible HVAC kWh and PMV metrics.
 - [x] Gate 3: MCP action changes a cooling setpoint inside an active EnergyPlus run.
 - [x] Gate 4: LangGraph completes approved, retry, fallback, and finish routes.
-- [ ] Gate 5: Controlled run saves energy with at least 90% occupied PMV compliance.
+- [x] Gate 5: Controlled run saves energy with at least 90% occupied PMV compliance.
 - [ ] Gate 6: Dashboard, tests, video, presentation, and public repository are complete.
 
 ## Progress update procedure

@@ -275,6 +275,51 @@ def test_zero_energy_zero_occupancy_missing_ppd_and_baseline_has_no_fake_decisio
     assert result.reliability.longest_without_approved_action_minutes is None
 
 
+def test_action_gap_uses_hourly_decision_domain_not_metric_timesteps() -> None:
+    run_id = "decision-domain"
+    decisions = tuple(
+        record
+        for sequence in range(1, 4)
+        for record in (
+            decision(
+                run_id,
+                f"decision-{sequence}",
+                DecisionPhase.PROPOSED,
+                sequence=sequence,
+            ),
+            *(
+                (
+                    decision(
+                        run_id,
+                        f"decision-{sequence}",
+                        DecisionPhase.APPLIED,
+                        sequence=sequence,
+                    ),
+                )
+                if sequence != 2
+                else ()
+            ),
+        )
+    )
+    result = calculate_run_summary(
+        metadata=RunMetadata(
+            run_id=run_id,
+            timestamp_utc=UTC_0,
+            mode=RunMode.CONTROLLED,
+            timestep_minutes=15.0,
+            decision_interval_minutes=60.0,
+            control_observation_count=3,
+        ),
+        timestamp_utc=UTC_2,
+        samples=tuple(
+            sample(run_id, sequence=sequence, zone_id="ZONE-A", hvac_j=0.0)
+            for sequence in range(1, 13)
+        ),
+        decisions=decisions,
+    )
+    assert result.reliability.longest_without_approved_action_minutes == 60.0
+
+
 def test_comfort_boundaries_are_inclusive_and_emergency_is_strictly_outside() -> None:
     run_id = "comfort-boundaries"
     values = (-0.5, 0.5, 0.5001, -1.0, -1.0001)
@@ -679,6 +724,24 @@ def test_concurrent_append_produces_complete_parseable_jsonl(tmp_path: Path) -> 
     assert {record.decision_id for record in result.records if isinstance(
         record, DecisionAuditRecord
     )} == {f"decision-{index}" for index in range(64)}
+
+
+def test_batch_append_is_bounded_and_preserves_all_records(tmp_path: Path) -> None:
+    store = EventStore(tmp_path, "batch-run")
+    assert store.append_many(()) == ()
+    records = tuple(
+        decision(
+            "batch-run",
+            f"decision-{index}",
+            DecisionPhase.PROPOSED,
+            sequence=index + 1,
+        )
+        for index in range(3)
+    )
+    paths = store.append_many(records)
+    assert len(paths) == 3
+    assert len(set(paths)) == 1
+    assert store.read("normalized-decisions.jsonl").records == records
 
 
 def test_exports_are_stable_atomic_run_scoped_and_no_overwrite(tmp_path: Path) -> None:

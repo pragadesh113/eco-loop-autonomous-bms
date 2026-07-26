@@ -131,20 +131,33 @@ class EventStore:
         return "normalized-run-events.jsonl"
 
     def append(self, record: PersistedRecord) -> Path:
-        if record.run_id != self.run_id:
-            raise MetricsStoreError("record run identity differs from event store")
-        path = self.run_dir / self._stream_name(record)
-        serialized = record.model_dump_json()
-        with _path_lock(path):
-            try:
-                with path.open("a", encoding="utf-8", newline="\n") as handle:
-                    handle.write(serialized)
-                    handle.write("\n")
-                    handle.flush()
-                    os.fsync(handle.fileno())
-            except OSError as error:
-                raise MetricsStoreError(f"cannot append {path.name}") from error
-        return path
+        return self.append_many((record,))[0]
+
+    def append_many(self, records: Sequence[PersistedRecord]) -> tuple[Path, ...]:
+        """Append a bounded batch with one flush per stream."""
+
+        if not records:
+            return ()
+        grouped: dict[Path, list[str]] = {}
+        ordered_paths: list[Path] = []
+        for record in records:
+            if record.run_id != self.run_id:
+                raise MetricsStoreError("record run identity differs from event store")
+            path = self.run_dir / self._stream_name(record)
+            grouped.setdefault(path, []).append(record.model_dump_json())
+            ordered_paths.append(path)
+        for path, serialized_records in grouped.items():
+            with _path_lock(path):
+                try:
+                    with path.open("a", encoding="utf-8", newline="\n") as handle:
+                        for serialized in serialized_records:
+                            handle.write(serialized)
+                            handle.write("\n")
+                        handle.flush()
+                        os.fsync(handle.fileno())
+                except OSError as error:
+                    raise MetricsStoreError(f"cannot append {path.name}") from error
+        return tuple(ordered_paths)
 
     def read(self, stream_name: str) -> ReadResult:
         allowed = {

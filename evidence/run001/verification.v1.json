@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.0",
+  "feature_id": "RUN-001",
+  "verified_at_utc": "2026-07-26T06:43:00Z",
+  "verdict": "approved",
+  "run_id": "controlled-run001-optimized-v3",
+  "baseline_run_id": "baseline-sim002-isolated-a",
+  "acceptance": {
+    "weather_timesteps": 672,
+    "observations": 168,
+    "actions_applied": 168,
+    "energyplus_exit_code": 0,
+    "energyplus_severe_errors": 0,
+    "baseline_hvac_kwh": 40.330583833437416,
+    "controlled_hvac_kwh": 33.84084809588941,
+    "savings_kwh": 6.489735737548003,
+    "savings_percent": 16.091350832782815,
+    "baseline_compliance_percent": 76.0,
+    "controlled_compliance_percent": 90.63636363636364,
+    "baseline_emergency_violations": 5,
+    "controlled_emergency_violations": 5,
+    "autonomy_percent": 100.0,
+    "longest_without_approved_action_minutes": 0.0
+  },
+  "safety": {
+    "all_actions_within_22_28_c": true,
+    "max_adjacent_action_change_lte_1_c": true,
+    "exact_server_authorization_and_actuation": true,
+    "unique_successful_idempotency_keys": 168,
+    "graph_errors": 0,
+    "unknown_error_code_redaction_passed": true,
+    "repeat_persistence_no_mutation_passed": true,
+    "constraints_calls": 1,
+    "reset_calls": 1
+  },
+  "quality": {
+    "focused_tests_passed": 36,
+    "full_tests_passed": 369,
+    "coverage_percent": 90.16,
+    "ruff": "passed",
+    "pyright_errors": 0,
+    "independent_tester": "passed"
+  },
+  "sha256": {
+    "src/bms_agent/integration/gateway.py": "e19757ee69f606aac7370e435c41a6fd86802cfe434ccfae3f400f951945d8cb",
+    "src/bms_agent/integration/runner.py": "baa990295457292f393eb5bc89eef6e43cc611892ded4e1dc3470c98729f5100",
+    "src/bms_agent/integration/artifacts.py": "3cfa389e4f157597fe1ec6223e0aa914832f06adf7986d328ee3327b8facc93d",
+    "src/bms_agent/control/safety.py": "79be24088e0e49ff63b93f699dae1ddbc32d5a7208fd240ae238f771ee0d9a35",
+    "src/bms_agent/graph/agent_runtime.py": "90af553193cdf1ccc1cacc0826ffec9526db8c99faa43bafeb2aae237382c279",
+    "src/bms_agent/metrics/contracts.py": "147b67d46dab9808a4bd68ae86df55bf0ce21b51a402ead5689ac7da93111ceb",
+    "src/bms_agent/metrics/evaluation.py": "f12ac2775c125d00a0e7bcac06f5db1a238e2983f2b5d8043614d5c4cce3aa83",
+    "src/bms_agent/metrics/store.py": "8423b66f39475320a2ad8adeeaf9f146265c886e247b5a92ae1276328d6aead9",
+    "tests/test_integration_gateway.py": "d493db2fb09053a7e6acfcb0ba20cff2b17e39a0723236d5de1e18f1480b1dfe",
+    "tests/test_agent_runtime.py": "fe8a64193a954686ac21d50f56330654384147576c1264645e67f9a41cd7bb38",
+    "tests/test_control_safety.py": "9a06d9c168104828207ab1a7040ad67488930bc157c8bf4a497c689595aad820",
+    "tests/test_metrics.py": "0fc0db05e12592e288cba2b1fd706fc1adac7605e20729414439826daf549487",
+    "runs/controlled-run001-optimized-v3/summary.json": "7daf49be1a4850d793fa7ac9fc1d5142ec0680e601775abafb6d2ba95f33c54a",
+    "runs/controlled-run001-optimized-v3/comparison.csv": "5848c0c2f7202e97e43cff7f5c69c7827de2fb3dff146e9dc47f5698fa9f835c"
+  }
+}

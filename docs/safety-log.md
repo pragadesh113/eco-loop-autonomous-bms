@@ -1,12 +1,62 @@
 # Safety and Decision Log
 
-Last updated: 2026-07-26 11:22 IST
+Last updated: 2026-07-26 12:14 IST
 
 This is the append-only project record for unsafe conditions, safety-relevant findings,
 isolated feature pauses, approval needs, and mitigations. Deterministic safety rules in
 `docs/techspec.md` always outrank model output and schedule pressure.
 
 ## Current and recently resolved items
+
+### SAFE-020 — RUN audit and MCP lifecycle evidence could be misleading
+
+- **Observed:** 2026-07-26 11:55 IST during independent `RUN-001` testing.
+- **Affected feature:** `RUN-001` approval only.
+- **Evidence:** Unknown MCP error codes could enter graph errors; repeating artifact
+  persistence could append JSONL before refusing existing exports; hourly decision and
+  15-minute metric sequences produced a false 7,560-minute action gap; constraints and
+  reset tools were absent from the accepted lifecycle.
+- **Risk:** A physically safe run could still expose marker-bearing error codes, mutate
+  accepted evidence, report false reliability, or omit proof that locked constraints
+  and cleanup were exercised.
+- **Disposition:** Resolved at 2026-07-26 12:13 IST after independent testing.
+- **Required approval:** None. These are mandatory, bounded acceptance corrections.
+- **Controls:** Allowlist server error codes; preflight every output before any write;
+  model decision interval/count explicitly; verify exact locked constraints after
+  start; reset every terminal session through FastMCP.
+- **Verification:** Fresh run `controlled-run001-optimized-v3` reports a zero-minute
+  action gap and has one constraints/reset call. Independent redaction, hash-preservation,
+  decision-domain, and lifecycle probes passed; 36 focused and 369 full tests passed.
+
+### SAFE-018 — Completed run requested one nonexistent next observation
+
+- **Observed:** 2026-07-26 11:44 IST during the first natural seven-day controlled run.
+- **Affected feature:** `RUN-001`.
+- **Evidence:** After the 168th hourly action EnergyPlus completed normally, while the
+  graph attempted observation 169 and received `OBSERVATION_TIMEOUT`.
+- **Risk:** Natural completion could be misclassified as a failed final decision.
+- **Disposition:** Resolved at 2026-07-26 12:13 IST after independent RUN testing.
+- **Required approval:** None.
+- **Controls:** A terminal observation timeout is accepted only when a fresh MCP status
+  proves the same run is completed; all other timeouts remain failures.
+- **Verification:** Candidate v3 completed 672 timesteps, 168 decisions, exit code 0,
+  zero severe errors, and a completed summary.
+
+### SAFE-017 — EnergyPlus exposes an out-of-policy pre-control schedule value
+
+- **Observed:** 2026-07-26 11:35 IST during the first concrete gateway smoke.
+- **Affected feature:** `RUN-001`.
+- **Evidence:** Before the first actuator write, EnergyPlus reported the schedule as
+  `29.4°C`, outside the locked `22..28°C` action range.
+- **Risk:** Feeding that value into an advisory schema or treating it as a safe previous
+  action could break the fail-closed control contract.
+- **Disposition:** Resolved at 2026-07-26 12:13 IST after independent RUN testing.
+- **Required approval:** None.
+- **Controls:** Exclude invalid pre-control trend samples, latch
+  `INVALID_OBSERVATION`, and use only a bounded placeholder plus deterministic safe
+  fallback. Server-side validation remains authoritative.
+- **Verification:** Focused safety/agent/integration tests passed; candidate v3 applied
+  only bounded exact actions.
 
 ### SAFE-016 — Decision audit lifecycle is not bound to an observed sequence
 

@@ -192,14 +192,12 @@ def _decision_metrics(
 
 
 def _longest_without_action(
-    samples: Sequence[MetricSample],
     decisions: Sequence[DecisionAuditRecord],
-    proposed_count: int,
-    timestep_minutes: float,
+    observed_sequences: set[int],
+    decision_interval_minutes: float,
 ) -> float | None:
-    if not samples or proposed_count == 0:
+    if not observed_sequences:
         return None
-    sequences = sorted({sample.sequence for sample in samples})
     applied_sequences = {
         record.observation_sequence
         for record in decisions
@@ -207,21 +205,21 @@ def _longest_without_action(
     }
     longest = 0
     current = 0
-    for sequence in sequences:
+    for sequence in sorted(observed_sequences):
         if sequence in applied_sequences:
             current = 0
         else:
             current += 1
             longest = max(longest, current)
-    return longest * timestep_minutes
+    return longest * decision_interval_minutes
 
 
 def _reliability_metrics(
-    samples: Sequence[MetricSample],
     decisions: Sequence[DecisionAuditRecord],
     run_events: Sequence[RunAuditRecord],
     decision_metrics: DecisionMetrics,
-    timestep_minutes: float,
+    observed_sequences: set[int],
+    decision_interval_minutes: float,
 ) -> ReliabilityMetrics:
     errors = sum(record.event_type is RunEventType.ERROR for record in run_events)
     recoveries = sum(record.event_type is RunEventType.RECOVERY for record in run_events)
@@ -239,10 +237,9 @@ def _reliability_metrics(
         autonomy_percent=autonomy,
         reliability_percent=reliability,
         longest_without_approved_action_minutes=_longest_without_action(
-            samples,
             decisions,
-            decision_metrics.proposed,
-            timestep_minutes,
+            observed_sequences,
+            decision_interval_minutes,
         ),
     )
 
@@ -268,16 +265,20 @@ def calculate_run_summary(
     _validate_decision_references(decisions, graph_events, run_events)
     energy = _energy_metrics(samples)
     comfort = _comfort_metrics(samples, metadata.timestep_minutes)
-    decision_metrics = _decision_metrics(
-        decisions,
-        {sample.sequence for sample in samples},
+    observed_sequences: set[int] = (
+        set()
+        if metadata.mode is RunMode.BASELINE
+        else set(range(1, metadata.control_observation_count + 1))
+        if metadata.control_observation_count is not None
+        else {sample.sequence for sample in samples}
     )
+    decision_metrics = _decision_metrics(decisions, observed_sequences)
     reliability = _reliability_metrics(
-        samples,
         decisions,
         run_events,
         decision_metrics,
-        metadata.timestep_minutes,
+        observed_sequences,
+        metadata.decision_interval_minutes,
     )
     return RunMetricsSummary(
         run_id=metadata.run_id,

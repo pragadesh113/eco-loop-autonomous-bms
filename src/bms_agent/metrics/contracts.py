@@ -51,6 +51,8 @@ class RunMetadata(MetricsContract):
     timestamp_utc: UtcTimestamp
     mode: RunMode
     timestep_minutes: float = Field(gt=0.0, le=60.0)
+    decision_interval_minutes: float = Field(default=60.0, gt=0.0, le=60.0)
+    control_observation_count: int | None = Field(default=None, ge=1)
 
 
 class MetricSample(MetricsContract):

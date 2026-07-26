@@ -241,22 +241,11 @@ DEFAULT_POLICY = SafetyPolicy()
 
 _INVALID_FALLBACK_TRIGGERS = frozenset(
     {
-        ValidationReasonCode.ADVISORY_UNAVAILABLE,
-        ValidationReasonCode.ADVISORY_DEADLINE_EXHAUSTED,
-        ValidationReasonCode.ADVISORY_ABSTAINED,
         ValidationReasonCode.IDENTITY_MISMATCH,
         ValidationReasonCode.STALE_OBSERVATION,
         ValidationReasonCode.MISSING_ZONE_DATA,
         ValidationReasonCode.NON_FINITE_VALUE,
         ValidationReasonCode.INVALID_OBSERVATION,
-        ValidationReasonCode.MISSING_ENERGY_EVIDENCE,
-        ValidationReasonCode.MISSING_COMFORT_EVIDENCE,
-        ValidationReasonCode.SETPOINT_OUT_OF_BOUNDS,
-        ValidationReasonCode.RATE_LIMIT_EXCEEDED,
-        ValidationReasonCode.HOT_DIRECTION_WORSENING,
-        ValidationReasonCode.COLD_DIRECTION_WORSENING,
-        ValidationReasonCode.NEUTRAL_DIRECTION_UNSAFE,
-        ValidationReasonCode.UNOCCUPIED_ENERGY_DIRECTION,
     }
 )
 

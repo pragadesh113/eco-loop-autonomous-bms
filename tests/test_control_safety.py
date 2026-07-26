@@ -521,6 +521,22 @@ def test_pmv_boundaries_are_exact(
             25.0,
             FallbackReasonCode.LAST_SAFE_INVALID_INPUT,
         ),
+        (
+            (-0.7, -0.2),
+            (1.0, 1.0),
+            24.0,
+            ValidationReasonCode.ADVISORY_UNAVAILABLE,
+            24.5,
+            FallbackReasonCode.CORRECT_OCCUPIED_COLD,
+        ),
+        (
+            (0.0, 0.0),
+            (0.0, 0.0),
+            24.0,
+            ValidationReasonCode.ADVISORY_DEADLINE_EXHAUSTED,
+            25.0,
+            FallbackReasonCode.SETBACK_UNOCCUPIED,
+        ),
     ],
 )
 def test_fallback_policy_table(

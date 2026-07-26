@@ -145,6 +145,13 @@ class AgentGraphRuntime:
     def energy_agent(self, state: GraphStateView) -> EnergyProposal:
         context = self._current(state)
         current = _require_current(context)
+        current_setpoint = current.envelope.snapshot.current_setpoint_c
+        if not (
+            math.isfinite(current_setpoint)
+            and 22.0 <= current_setpoint <= 28.0
+        ):
+            context.advisory_failure = ValidationReasonCode.INVALID_OBSERVATION
+            return _energy_placeholder(current)
         if not self._can_infer(
             context,
             self.config.energy_role_reserve_seconds,
@@ -401,7 +408,42 @@ class AgentGraphRuntime:
                 "EVALUATION_CONTEXT_MISSING",
                 "evaluation requires one applied action",
             )
-        next_observation = self._await_gateway_observation(state.run_id)
+        try:
+            next_observation = self.gateway.await_observation(
+                run_id=state.run_id,
+                timeout_seconds=self.config.observation_timeout_seconds,
+            )
+        except McpGatewayError as error:
+            if error.code != "OBSERVATION_TIMEOUT":
+                raise _gateway_error(error) from None
+            try:
+                terminal_status = self.gateway.status(run_id=state.run_id)
+            except McpGatewayError as status_error:
+                raise _gateway_error(status_error) from None
+            if (
+                terminal_status.run_id != state.run_id
+                or terminal_status.status != "completed"
+            ):
+                raise _gateway_error(error) from None
+            occupied = _occupied_pmvs(current.envelope)
+            compliant = sum(-0.5 <= value <= 0.5 for value in occupied)
+            compliance = 100.0 if not occupied else compliant / len(occupied) * 100.0
+            return EvaluationRecord(
+                decision_id=state.applied_action.action.decision_id,
+                evaluated_at_utc=_utc_now(),
+                energy_delta_kwh=0.0,
+                occupied_pmv_compliance_percent=compliance,
+                safe=all(-1.0 <= value <= 1.0 for value in occupied),
+            )
+        try:
+            next_observation = AgentObservation.model_validate(
+                next_observation.model_dump()
+            )
+        except Exception as error:
+            raise ExpectedGraphError(
+                "MCP_OBSERVATION_INVALID",
+                "MCP observation failed the bounded graph context contract",
+            ) from error
         if (
             next_observation.envelope.run_id != state.run_id
             or next_observation.envelope.sequence <= current.envelope.sequence
@@ -624,8 +666,12 @@ def _occupied_pmvs(observation: ObservationEnvelope) -> tuple[float, ...]:
 
 
 def _energy_placeholder(observation: AgentObservation) -> EnergyProposal:
+    observed = observation.envelope.snapshot.current_setpoint_c
+    safe_placeholder = 24.0
+    if math.isfinite(observed):
+        safe_placeholder = min(28.0, max(22.0, observed))
     return EnergyProposal(
-        proposed_setpoint_c=observation.envelope.snapshot.current_setpoint_c,
+        proposed_setpoint_c=safe_placeholder,
         expected_energy_effect=EnergyEffect.NEUTRAL,
         confidence=0.0,
         reason="advisory unavailable",

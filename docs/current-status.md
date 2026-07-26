@@ -1,18 +1,36 @@
 # Current Status
 
-Last updated: 2026-07-26 11:22 IST
+Last updated: 2026-07-26 12:14 IST
 
 ## Snapshot
 
 - **Project:** Eco-Loop Building Agents
-- **Phase:** Closed-loop experiment
-- **Active feature:** `RUN-001` Closed-loop controlled experiment
+- **Phase:** Dashboard and quality
+- **Active feature:** `UI-001` Streamlit results dashboard
 - **Feature state:** `in_progress`
-- **Last completed feature:** `MET-001` Audit log and quantitative evaluation
+- **Last completed feature:** `RUN-001` Closed-loop controlled experiment
 - **Deadline:** July 26, 2026, 11:59 PM IST
 - **Workspace:** `V:\BMS_simulation`
 
 ## Latest work
+
+`RUN-001` completed its Developer gate. The concrete in-process FastMCP gateway now
+dispatches the locked start/constraints/observation/trend/action/status/stop/summary/reset
+lifecycle, rejects changed constraints, maps unknown server error codes to a bounded
+generic code, and never gives agents direct session access. Pre-control EnergyPlus
+schedule values outside `22..28°C` are treated as invalid observations until the first
+safe actuation; the final completed-session observation timeout is classified as a
+terminal boundary rather than a failed decision.
+
+The fresh immutable candidate `controlled-run001-optimized-v3` completed 672/672
+timesteps with 168/168 exact server-authorized actions, zero severe errors,
+33.84084809588941 kWh versus the 40.330583833437416 kWh baseline
+(16.091350832782815% savings), and 90.63636363636364% occupied PMV compliance. Its
+reliability summary reports 100% autonomy and zero minutes without an approved action.
+The MCP audit contains one constraints and one reset dispatch. Independent verification
+closed every prior finding, confirmed all 168 actions were bounded and exact, and passed
+36 focused plus all 369 tests at 90.16% coverage with Ruff and strict Pyright clean.
+`RUN-001` and Gate 5 are approved.
 
 `ENV-001` passed independent testing and Senior Lead review:
 
@@ -397,11 +415,9 @@ compact, sequential, bounded, and optional.
 
 ## Exact next action
 
-Developer implements the smallest real `RUN-001` vertical slice: a concrete FastMCP
-gateway for `AgentGraphRuntime`, controlled-session lifecycle ownership, normalized
-metric/audit capture, and a one-day smoke before the immutable seven-day experiment.
-The gateway must use the verified server-side reauthorization boundary; no direct
-session or actuator access is allowed from agent code.
+Developer builds the read-only `UI-001` Streamlit dashboard from the accepted v3
+summary, comparison, observations, decisions, and graph events, then Tester runs a
+headless dashboard smoke and metric-correctness checks.
 
 ## Blockers and approvals
 

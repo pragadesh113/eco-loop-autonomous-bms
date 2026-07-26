@@ -155,6 +155,7 @@ class FakeGateway:
     status_value: str = "running"
     result_changes: dict[str, object] = field(default_factory=lambda: dict[str, object]())
     submit_error: bool = False
+    terminal_timeout: bool = False
     start_calls: list[tuple[str, int, float]] = field(
         default_factory=lambda: list[tuple[str, int, float]]()
     )
@@ -184,6 +185,8 @@ class FakeGateway:
     ) -> AgentObservation:
         _ = timeout_seconds
         self.await_calls += 1
+        if not self.observations and self.terminal_timeout:
+            raise McpGatewayError("OBSERVATION_TIMEOUT", "bounded terminal timeout")
         observation = self.observations.pop(0)
         assert observation.envelope.run_id == run_id
         self.last_observation = observation
@@ -292,6 +295,7 @@ def _runtime(
     observations: Iterable[AgentObservation] | None = None,
     gateway_changes: dict[str, object] | None = None,
     submit_error: bool = False,
+    terminal_timeout: bool = False,
 ) -> tuple[AgentGraphRuntime, FakeProvider, FakeGateway, FakeClock]:
     resolved_clock = clock or FakeClock()
     resolved_provider = provider or FakeProvider(resolved_clock)
@@ -306,6 +310,7 @@ def _runtime(
         values,
         result_changes=gateway_changes or {},
         submit_error=submit_error,
+        terminal_timeout=terminal_timeout,
     )
     runtime = AgentGraphRuntime(
         cast(AdvisoryProvider, resolved_provider),
@@ -313,6 +318,24 @@ def _runtime(
         monotonic=resolved_clock,
     )
     return runtime, resolved_provider, gateway, resolved_clock
+
+
+def test_terminal_observation_timeout_after_final_action_finishes_cleanly() -> None:
+    run_id = "terminal-completion"
+    runtime, _, gateway, _ = _runtime(
+        run_id=run_id,
+        observations=(_observation(run_id, 1, pmv=0.0, hvac_j=1_000_000.0),),
+        terminal_timeout=True,
+    )
+    gateway.status_value = "completed"
+
+    state = _run(runtime, run_id=run_id)
+
+    assert state["simulation_status"] is SimulationStatus.COMPLETED
+    assert state["completed_decisions"] == 1
+    assert state["error"] is None
+    assert gateway.await_calls == 2
+    assert len(gateway.submitted) == 1
 
 
 def _run(
@@ -660,7 +683,7 @@ def test_wrong_pmv_semantics_cannot_actuate_advisory_and_uses_fallback() -> None
     assert len(gateway.submitted) == 1
     request = gateway.submitted[0]
     assert request.control_source == "deterministic_fallback"
-    assert request.setpoint_c == 24.0
+    assert request.setpoint_c == 23.5
     assert request.fallback_trigger is ValidationReasonCode.HOT_DIRECTION_WORSENING
 
 

@@ -238,7 +238,7 @@
       "name": "Closed-loop controlled experiment",
       "description": "Execute and tune the seven-day agent-controlled New Delhi simulation, then produce the accepted baseline comparison.",
       "priority": "critical",
-      "status": "in_progress",
+      "status": "done",
       "dependencies": [
         "AGT-002",
         "MET-001"
@@ -255,7 +255,7 @@
       "name": "Streamlit results dashboard",
       "description": "Visualize current graph state, PMV, temperature, setpoint, cumulative energy, decisions, savings, compliance, rejections, and fallbacks.",
       "priority": "high",
-      "status": "todo",
+      "status": "in_progress",
       "dependencies": [
         "MET-001"
       ],
