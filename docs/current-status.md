@@ -5,10 +5,10 @@ Last updated: 2026-08-27 IST
 ## Snapshot
 
 - **Project:** Eco-Loop Building Agents
-- **Phase:** GitHub publication
+- **Phase:** Delivery complete
 - **Active feature:** `DEL-001` Hackathon submission package
-- **Feature state:** `in_progress`
-- **Last completed feature:** `LAB-001` Interactive live scenario lab
+- **Feature state:** `done`
+- **Last completed feature:** `DEL-001` Hackathon submission package
 - **Deadline:** July 26, 2026, 11:59 PM IST
 - **Workspace:** `V:\BMS_simulation`
 
@@ -20,8 +20,9 @@ locally authenticated GitHub account. Repository preparation includes source, te
 documentation, compact evidence, models, the original problem images and supplied PPT
 template, and the verified MP4/PPTX/PDF deliverables. Secrets, local runtimes, caches,
 generated runs, weather downloads, model weights, temporary files, and the transfer ZIP
-remain excluded. Publication and anonymous-access verification are in progress.
-Deployment, external media hosting, and portal upload remain separately gated.
+remain excluded. Public `main` was anonymously verified at commit `36b05c0`, including
+the MP4, PPTX, and PDF under `deliverables/`. All `DEL-001` acceptance criteria pass.
+Optional deployment, external media hosting, and portal upload remain separate actions.
 
 `docs/technical-document.md` now provides a complete 32-section, approximately
 6,900-word technical reference for the implemented project. It reconciles the SRS,

@@ -35,11 +35,10 @@ Last synchronized: 2026-08-27 IST
 - [x] `LAB-001` Interactive live scenario lab — independently approved with eight-stage
   LangGraph interaction, safe Qwen fallback, no accepted-run mutation or physical
   control; reported preset/JSON/legend UI regressions resolved and verified
-- [ ] `DEL-001` Hackathon submission package — presentation, PDF, and 81.8-second
+- [x] `DEL-001` Hackathon submission package — presentation, PDF, and 81.8-second
   dashboard demonstration video completed and verified locally, with participant
-  identity updated to `Gokulan Malli Jayaprakash` / `C10421040`; publication to
-  `pragadesh113/eco-loop-autonomous-bms` is in progress; deployment and portal
-  submission remain approval-gated
+  identity updated to `Gokulan Malli Jayaprakash` / `C10421040`; public `main` at
+  `pragadesh113/eco-loop-autonomous-bms` verified at commit `36b05c0`
 
 The implementation remains on the original risk-first sequence. Feasibility evidence
 requires LLM output to be compact and advisory: Qwen3 4B stays as the primary model, but

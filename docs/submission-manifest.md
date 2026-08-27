@@ -29,6 +29,8 @@ Last updated: 2026-08-27 IST
   (`SHA-256 886889CE4CDAE916136F59C1AA459869F23C2C02CC1D6F693AC12DDA99EE0712`).
 - Feature verification records under `evidence/`.
 - Final local gate: 377 tests, 90.47% branch coverage, Ruff/Pyright/lock clean.
+- Public repository: `https://github.com/pragadesh113/eco-loop-autonomous-bms`, with
+  `main` and all three final deliverables anonymously verified at commit `36b05c0`.
 
 ## Delivery-media verification
 
@@ -56,13 +58,11 @@ Last updated: 2026-08-27 IST
 
 These are intentionally not claimed complete:
 
-- Public GitHub repository URL: publication is in progress at
-  `https://github.com/pragadesh113/eco-loop-autonomous-bms`.
 - Public dashboard deployment URL: not deployed.
 - Demonstration video upload: local MP4 ready; not uploaded.
 - Presentation upload: local PPTX and PDF ready; not uploaded.
 - Portal PDF/ZIP upload: not performed.
 
-GitHub publication has explicit user authorization. Deployment, external media hosting,
-and portal submission still require a separate explicit user decision and any necessary
+GitHub publication is complete. Deployment, external media hosting, and portal
+submission still require a separate explicit user decision and any necessary
 target/account access.

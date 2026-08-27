@@ -6,14 +6,14 @@ Last synchronized: 2026-08-27 IST
 
 ## Overall status
 
-- Completed: 17 of 18 features
-- In progress or rework: 1
+- Completed: 18 of 18 features
+- In progress or rework: 0
 - Waiting approval: 0
 - Blocked: 0
 - Remaining todo: 0
-- Current stage: `DEL-001` publication to
-  `https://github.com/pragadesh113/eco-loop-autonomous-bms` is in progress. Deployment
-  and portal uploads remain separately approval-gated.
+- Current stage: all 18 features are complete. Public `main` at
+  `https://github.com/pragadesh113/eco-loop-autonomous-bms` was anonymously verified at
+  commit `36b05c0`, including all three final deliverables.
 
 ## Feature checklist
 
@@ -352,7 +352,7 @@ Last synchronized: 2026-08-27 IST
     the control-chart legend is separated from its axis. Eight focused tests and all
     377 tests passed at 90.47% coverage; dark-theme browser verification had zero
     exceptions/JSON errors.
-- [ ] `DEL-001` Hackathon submission package — **in_progress**
+- [x] `DEL-001` Hackathon submission package — **done**
   - Ready locally: final README, MIT license, architecture report, three-minute demo
     guide, exact compact accepted artifacts, dashboard screenshot, submission manifest,
     and feature verification evidence.
@@ -367,9 +367,9 @@ Last synchronized: 2026-08-27 IST
   - Submission identity revised to `Gokulan Malli Jayaprakash` / `C10421040` in the
     PPTX, portal PDF, and MP4 opening. Overflow, template-fidelity, PDF render, and
     video-frame checks passed after regeneration.
-  - GitHub publication is in progress for
-    `https://github.com/pragadesh113/eco-loop-autonomous-bms`. Video hosting, public
-    deployment, and portal upload remain separately gated.
+  - Public `main` at `https://github.com/pragadesh113/eco-loop-autonomous-bms` was
+    anonymously verified at commit `36b05c0`. The repository API confirmed the MP4,
+    PPTX, and PDF are present under `deliverables/`.
 
 ## Milestone gates
 
@@ -378,8 +378,8 @@ Last synchronized: 2026-08-27 IST
 - [x] Gate 3: MCP action changes a cooling setpoint inside an active EnergyPlus run.
 - [x] Gate 4: LangGraph completes approved, retry, fallback, and finish routes.
 - [x] Gate 5: Controlled run saves energy with at least 90% occupied PMV compliance.
-- [ ] Gate 6: Dashboard, tests, video, and presentation are complete locally; public
-  repository publication and verification are in progress.
+- [x] Gate 6: Dashboard, tests, video, presentation, and public repository are complete
+  and verified.
 
 ## Progress update procedure
 

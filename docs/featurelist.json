@@ -306,9 +306,9 @@
       "id": "DEL-001",
       "module": "delivery",
       "name": "Hackathon submission package",
-      "description": "Finalize README, architecture report, curated run artifacts, supplied-template presentation, sub-three-minute video, public GitHub repository, and upload package. All local deliverables are verified; publication to github.com/pragadesh113/eco-loop-autonomous-bms is in progress, while deployment and submission uploads remain separately gated.",
+      "description": "Finalize README, architecture report, curated run artifacts, supplied-template presentation, sub-three-minute video, public GitHub repository, and upload package. The complete verified package is publicly accessible at github.com/pragadesh113/eco-loop-autonomous-bms; optional deployment and portal submission remain separate external actions.",
       "priority": "critical",
-      "status": "in_progress",
+      "status": "done",
       "dependencies": [
         "TST-001",
         "LAB-001"
