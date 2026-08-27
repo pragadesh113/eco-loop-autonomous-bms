@@ -58,7 +58,7 @@ weather downloads, and generated runs are intentionally excluded from Git.
 ## Setup
 
 ```powershell
-git clone https://github.com/gokulan21/eco-loop-building-agents-hcl.git
+git clone https://github.com/pragadesh113/eco-loop-autonomous-bms.git
 cd eco-loop-building-agents-hcl
 uv sync --locked --all-extras
 Copy-Item .env.example .env

@@ -306,9 +306,9 @@
       "id": "DEL-001",
       "module": "delivery",
       "name": "Hackathon submission package",
-      "description": "Finalize README, architecture report, curated run artifacts, supplied-template presentation, sub-three-minute video, public GitHub repository, and upload package. All local deliverables are verified; the user authorized publication to github.com/gokulan21/eco-loop-building-agents-hcl, while deployment and submission uploads remain approval-gated.",
+      "description": "Finalize README, architecture report, curated run artifacts, supplied-template presentation, sub-three-minute video, public GitHub repository, and upload package. All local deliverables are verified; publication to github.com/pragadesh113/eco-loop-autonomous-bms is in progress, while deployment and submission uploads remain separately gated.",
       "priority": "critical",
-      "status": "waiting_approval",
+      "status": "in_progress",
       "dependencies": [
         "TST-001",
         "LAB-001"

@@ -1,30 +1,27 @@
 # Current Status
 
-Last updated: 2026-07-26 22:15 IST
+Last updated: 2026-08-27 IST
 
 ## Snapshot
 
 - **Project:** Eco-Loop Building Agents
-- **Phase:** GitHub publication access gate
+- **Phase:** GitHub publication
 - **Active feature:** `DEL-001` Hackathon submission package
-- **Feature state:** `waiting_approval`
+- **Feature state:** `in_progress`
 - **Last completed feature:** `LAB-001` Interactive live scenario lab
 - **Deadline:** July 26, 2026, 11:59 PM IST
 - **Workspace:** `V:\BMS_simulation`
 
 ## Latest work
 
-The user authorized publication of the complete reproducible project and final
-deliverables to
-`https://github.com/gokulan21/eco-loop-building-agents-hcl`. The target contains only
-an initial one-line README. Repository preparation excludes secrets, local runtimes,
-caches, downloaded weather, generated run directories, model weights, and temporary
-presentation artifacts; it explicitly includes the verified MP4, PPTX, and PDF.
-All content is committed at `09fc8df`. The push was rejected with HTTP 403 because the
-Windows credential helper authenticated as GitHub user `pragadesh113`, which lacks
-write access to the `gokulan21` repository. Authenticate this machine as `gokulan21`
-or grant `pragadesh113` write access, then retry the prepared `HEAD:main` push.
-Deployment, video hosting, and portal upload remain separately approval-gated.
+The user selected the public repository
+`https://github.com/pragadesh113/eco-loop-autonomous-bms`. It was created under the
+locally authenticated GitHub account. Repository preparation includes source, tests,
+documentation, compact evidence, models, the original problem images and supplied PPT
+template, and the verified MP4/PPTX/PDF deliverables. Secrets, local runtimes, caches,
+generated runs, weather downloads, model weights, temporary files, and the transfer ZIP
+remain excluded. Publication and anonymous-access verification are in progress.
+Deployment, external media hosting, and portal upload remain separately gated.
 
 `docs/technical-document.md` now provides a complete 32-section, approximately
 6,900-word technical reference for the implemented project. It reconciles the SRS,

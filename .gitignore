@@ -60,5 +60,6 @@ outputs/
 .tmp/
 tmp/
 ~$*.pptx
+*.zip
 *.mp4
 !deliverables/EcoLoop_Building_Agents_Demo.mp4
